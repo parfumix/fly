@@ -1,0 +1,60 @@
+<div data-name="no_name" data-description="" data-required='checked' data-items='[{"checked": "true", "name": "My option"}]'>
+
+    <input type="text" name="name" value="<%=name%>">
+    <br />
+    <br />
+
+    <textarea name="description"><%=description%></textarea>
+
+    <br />
+    <br />
+    <input type="hidden" name="required" value="">
+    Required <input type="checkbox" name="required" value="<%=required%>">
+
+    <br />
+    <br />
+    Options
+    <br />
+
+    <div class="options">
+        <a href="#" class="add_new_option">add new</a>
+    </div>
+    <br />
+    <br />
+
+    <script type="text/javascript">
+        $(function() {
+            $(document).on('click', '.option_rm', function() {
+                if( $(this).closest('.options').find('li').length > 1 )
+                    $(this).closest('li').remove()
+            });
+
+            $('.add_new_option').on('click', function(e, v) {
+                var value = !v ? '' : v.value;
+
+                var checked = '';
+                if(_.get(v, 'checked', 'false') == 'true' )
+                    checked = 'checked';
+
+                var i = $('.options li').length;
+
+                var template = '<li>' +
+                            '<input type="checkbox" onClick="$(this).toggle(function(e) { $(this).val(\'true\'); return false; }, function(e) { $(this).val(\'false\'); return false; })" name="items['+i+'][checked]" value="'+_.get(v, 'checked', 'false')+'" '+checked+'>' +
+                            '<input type="hidden" name="items['+i+'][checked]" value="false">' +
+                            '<input type="text" name="items['+i+'][name]" value="'+ value+'">' +
+                            '<a href="#" class="option_rm">rm</a>' +
+                        '</li>';
+                $('.options').append(template);
+            });
+
+        })
+    </script>
+
+    <% items.forEach(function(v, k) { %>
+        <script>$('.add_new_option').trigger('click', {
+            value: "<%=v.name%>",
+            checked: "<%=v.checked%>"
+        })</script>
+    <% }); %>
+</div>
+

@@ -1,0 +1,27 @@
+{
+  "name": "builder",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Radu <radu.bordei89@gmail.com>"
+  ],
+  "license": "ISC",
+  "moduleType": [],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.6",
+    "lockr": "~0.8.4",
+    "jquery": "~2.1.4",
+    "jquery-ui": "~1.11.4",
+    "lodash": ">= 3.5.0",
+    "jquery-serialize-object": "~2.5.0"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "builder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bower": "^1.7.1",
+    "gulp": "^3.9.0",
+    "gulp-browserify": "^0.5.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-livereload": "^3.8.1",
+    "gulp-styl": "^1.1.0",
+    "tiny-lr": "^0.2.1"
+  },
+  "devDependencies": {
+    "gulp-foreach": "^0.1.0"
+  }
+}
