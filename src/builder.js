@@ -309,7 +309,7 @@
             });
 
             view.set_path(
-                _.get(arguments, 'template_path', 'templates/')
+                _.get(self.options, 'template_path', 'templates/')
             );
 
             view.load_templates().
