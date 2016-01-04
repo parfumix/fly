@@ -8,6 +8,10 @@
 
         templates: {},
 
+        set_path: function(path) {
+            this.templates_path = '/' + path
+        },
+
         path: function(is_element) {
             return this.templates_path + (is_element ? 'elements/' : 'properties/');
         },
@@ -51,11 +55,11 @@
 
 
         get_panel: function(panel_name) {
-            return _.get(view.panels, panel_name, '');
+            return _.get(this.panels, panel_name, '');
         },
 
         get_template: function(template) {
-            return _.get(view.templates, template, '');
+            return _.get(this.templates, template, '');
         }
     };
 
@@ -303,10 +307,14 @@
                     element.trigger('click');
                 }
             });
-        };
 
-        view.load_templates().
-            load_panels();
+            view.set_path(
+                _.get(arguments, 'template_path', 'templates/')
+            );
+
+            view.load_templates().
+                load_panels();
+        };
 
         self.add_elements = function(els) {
             _.each(els, function(el) {
