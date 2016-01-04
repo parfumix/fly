@@ -97,7 +97,7 @@
                 self.close();
 
             var template = self.get_template(),
-                parent = parent ? parent : (_.get(self.options, 'parent', $('body')));
+                parent = parent ? parent : (_.get(self.options, 'properties.parent', $('body')));
 
             var full_template = self.get_layout().replace('%template%', template);
 
