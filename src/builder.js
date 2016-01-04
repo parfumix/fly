@@ -63,24 +63,45 @@
         }
     };
 
-    var Panel = function(el) {
+    var Panel = function(el, options) {
+
         var self = this;
 
         self.element = el;
 
+        self.options = options;
+
         self.events = {};
 
-        self.panel_class = 'properties';
+        self.panel_class = _.get(self.options, 'class', 'properties');
+
+        var layout = '<div class="'+self.panel_class+'">%template%<div><p class="cancel">cancel</p><p class="save">save</p></div></div>';
+
+        if(_.has(self.options, 'properties.layout') )
+            layout = _.get(self.options, 'properties.layout')
+
+        self.set_layout = function(layout) {
+            self.layout = layout;
+
+            return self;
+        };
+
+        self.get_layout = function() {
+            return self.layout;
+        };
+
+        self.set_layout(layout);
 
         self.open = function(parent) {
             if( self.is_opened() )
                 self.close();
 
             var template = self.get_template(),
-                footer = '<div><p class="cancel">cancel</p><p class="save">save</p></div>',
                 parent = parent ? parent : $('body');
 
-            $(parent).append('<div class="'+self.panel_class+'">' + template + footer + '</div>');
+            var full_template = self.get_layout().replace('%template%', template);
+
+            $(parent).append(full_template);
 
             var active_panel = $('.' + self.panel_class);
 
@@ -138,11 +159,12 @@
         };
     };
 
-    var Avatar = function(element) {
+    var Avatar = function(element, options) {
 
         var self = this;
 
         self.element = element;
+        self.options = options;
         self.attributes = _.get(element, 'attributes', {});
 
         self.panel = false;
@@ -197,7 +219,7 @@
 
         self.get_panel = function() {
             if(! self.panel) {
-                self.panel = new Panel(self)
+                self.panel = new Panel(self, self.options)
             }
 
             return self.panel;
@@ -327,7 +349,7 @@
         self.add_element = function(el) {
             var attributes = _.get(el, 'attributes', {});
 
-            var element = new Avatar(el);
+            var element = new Avatar(el, self.options);
 
             self.elements.push(element);
 
