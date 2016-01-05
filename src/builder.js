@@ -1,5 +1,16 @@
 (function ($) {
 
+    var utils = {
+
+        decorate_item: function (element) {
+            return '<div class="col-md-12 avatar" data-toggle="popover">' + element + '</div>';
+        },
+
+        add_overlay: function(element) {
+            return '<div class="overlay"></div>' + element;
+        }
+    };
+
     var view = {
 
         templates_path: '/templates/',
@@ -7,6 +18,8 @@
         panels: {},
 
         templates: {},
+
+        popovers: {},
 
         set_path: function (path) {
             this.templates_path = '/' + path
@@ -16,43 +29,25 @@
             return this.templates_path + (is_element ? 'elements/' : 'properties/');
         },
 
-        load_html: function (url, callback) {
-            $.get(url).done(function (data) {
-                callback.call(view, data);
+        load_html: function (callback) {
+            $.get(view.templates_path + 'general.htm').done(function (result) {
+                $(result).find('div.panel').each(function () {
+                    view.panels[$(this).data('id')] = $(this)[0].outerHTML;
+                });
+
+                $(result).find('script.template').each(function () {
+                    view.templates[$(this).data('id')] = $(this).html();
+                });
+
+                $(result).find('script.popover').each(function () {
+                    view.popovers[$(this).data('id')] = $(this).html();
+                });
+
+                _.isFunction(callback) ? callback.call(view) : false;
             });
 
             return this;
         },
-
-
-        load_panels: function (callback) {
-            var self = this;
-
-            this.load_html(this.templates_path + 'panels.htm', function (result) {
-                $(result).find('div.panel').each(function () {
-                    self.panels[this.id] = $(this)[0].outerHTML;
-                });
-
-                _.isFunction(callback) ? callback.call(self, self.panels) : false;
-            });
-
-            return self;
-        },
-
-        load_templates: function (callback) {
-            var self = this;
-
-            this.load_html(self.templates_path + 'templates.htm', function (result) {
-                $(result).find('script.template').each(function () {
-                    self.templates[this.id] = $(this).html();
-                });
-
-                _.isFunction(callback) ? callback.call(self, self.templates) : false;
-            });
-
-            return self;
-        },
-
 
         get_panel: function (panel_name) {
             return _.get(this.panels, panel_name, '');
@@ -60,14 +55,18 @@
 
         get_template: function (template) {
             return _.get(this.templates, template, '');
+        },
+
+        get_popover: function (popover) {
+            return _.get(this.popovers, popover, '');
         }
     };
 
-    var Panel = function (el, options) {
+    var Panel = function (avatar, options) {
 
         var self = this;
 
-        self.element = el;
+        self.avatar = avatar;
 
         self.options = options;
 
@@ -109,7 +108,9 @@
                 if (self.is_opened())
                     self.close();
 
-                self.trigger('cancel', [self.element]);
+                $('[data-toggle=popover]').popover('hide');
+
+                self.trigger('cancel', [self.avatar['element']]);
             });
 
             active_panel.find('.save').on('click', function () {
@@ -117,7 +118,9 @@
                     .find(":input")
                     .serializeObject();
 
-                self.trigger('save', [self.element['scope'], attributes]);
+                $('[data-toggle=popover]').popover('hide');
+
+                self.trigger('save', [self.avatar['element'], attributes]);
 
                 self.close();
             });
@@ -150,12 +153,12 @@
         };
 
 
-        self.get_element = function () {
-            return self.element;
+        self.get_avatar = function () {
+            return self.avatar;
         };
 
         self.get_template = function () {
-            return self.get_element()
+            return self.get_avatar()
                 .get_panel_template(false);
         };
     };
@@ -164,11 +167,51 @@
 
         var self = this;
 
+        self.unique = new Date();
+
         self.element = element;
         self.options = options;
-        self.attributes = _.get(element, 'attributes', {});
+        self.attributes = $(element).data();
 
         self.panel = false;
+
+        self.init = function() {
+            var tooltip = _.get(self.options, 'tooltip');
+
+            if( self.get_popover() )
+                tooltip.content = self.get_popover();
+
+            $(self.element).popover(tooltip).on('show.bs.popover', function () {
+                    $('[data-toggle=popover]').not(
+                        $(self.element)
+                    ).popover('hide');
+                }).on('shown.bs.popover', function () {
+                    if (_.get(self.options, 'tooltip.enabled', false)) {
+
+                        var popover = $(self.element).data('bs.popover'),
+                            panel = self.get_panel();
+                        
+                        popover.tip().find('.edit').on('click', function () {
+                            panel.on('save', function (ui, attributes) {
+
+                                self.fill(attributes);
+
+                                $(self.element).attr('class', attributes.size + ' avatar');
+
+                                $(self.element).html(
+                                    utils.add_overlay(
+                                        self.get_template(false)
+                                    )
+                                );
+
+                                $(self.element).data('avatar', self);
+                            });
+
+                            panel.open();
+                        })
+                    }
+                });
+        };
 
         self.fill = function (attributes) {
             _.each(attributes, function (v, k) {
@@ -180,7 +223,7 @@
 
         self.get_template = function (clean) {
             var template = view.get_template(
-                _.get(self.element, 'type', 'text')
+                _.get(self.attributes, 'type', 'text')
             );
 
             if (!clean) {
@@ -198,24 +241,30 @@
         };
 
         self.get_panel_template = function (clean) {
-            var template = view.get_panel(
-                _.get(self.element, 'panel', 'text')
+            var panel = view.get_panel(
+                _.get(self.attributes, 'panel', 'text')
             );
 
             if (!clean) {
-                var tpl = _.template(_.unescape(template)),
-                    panel_attributes = $(template).data();
+                var tpl = _.template(_.unescape(panel));
+                var attributes = $(panel).data();
 
-                var attributes = _.merge(panel_attributes, _.get(self, 'attributes', {}));
+                var attr = self.attributes;
 
-                template = tpl(attributes);
+                attributes = _.merge(attributes, attr);
+
+                panel = tpl(attributes);
             }
 
-            return template;
+            return panel;
         };
 
-        self.get_attributes = function () {
-            return _.get(self, 'attributes', {})
+        self.get_popover = function() {
+            var popover = view.get_popover(
+                _.get(self.attributes, 'popover', 'text')
+            );
+
+            return popover;
         };
 
         self.get_panel = function () {
@@ -251,37 +300,6 @@
             }
         });
 
-        // move it to avatar, make it as function
-        self.popover = function (ui) {
-            $(ui).popover(
-                _.get(self.options, 'tooltip')
-            ).on('show.bs.popover', function () {
-                    $('[data-toggle=popover]').not(
-                        $(ui)
-                    ).popover('hide');
-                }).on('shown.bs.popover', function () {
-
-                    var avatar = ui.data('avatar'),
-                        popover = ui.data('bs.popover'),
-                        panel = avatar.get_panel(true);
-
-                    if (_.get(self.options, 'tooltip.enabled', false)) {
-                        popover.tip().find('.edit').on('click', function () {
-                            panel.on('save', function (ui, attributes) {
-                                var avatar = $(ui).data('avatar');
-
-                                avatar.fill(attributes);
-
-                                $(ui).attr('class', attributes.size);
-                                $(ui).html(avatar.get_template(false));
-
-                                $(ui).data('avatar', avatar);
-                            }).open();
-                        })
-                    }
-                });
-        };
-
         self.init = function () {
 
             $(self.draggable).draggable({
@@ -292,15 +310,11 @@
             });
 
             $(self.container).find('.avatar').each(function () {
-                var data = $(this).data();
-                var avatar = self.add_element(data);
-                avatar.scope = $(this);
+                var avatar = self.add_element(this);
 
                 $(this).data('avatar', avatar);
 
-                self.popover(
-                    $(this)
-                );
+                avatar.init()
             });
 
             $(self.container).find('.row').sortable({
@@ -310,15 +324,17 @@
             $(self.container).droppable({
                 accept: self.draggable,
                 drop: function (event, ui) {
-                    var data = $(ui.draggable).data();
-
-                    var avatar = self.add_element(data);
-
-                    var element = $(self._decorate_item(
-                        avatar.get_template(false))
+                    var avatar = self.add_element(
+                        $(ui.draggable)
                     );
 
-                    if (!self.container.find('.row').length) {
+                    var element = $(utils.decorate_item(
+                        utils.add_overlay(
+                            avatar.get_template(false))
+                        )
+                    );
+
+                    if (! self.container.find('.row').length) {
                         self.container.append('<div class="row " ' + self.sortable_class + '></div>');
 
                         $(self.container).find('.row').sortable({
@@ -328,24 +344,17 @@
 
                     var row = self.container.find('div.row');
 
-                    avatar.scope = element;
+                    row.append(element);
+
+                    avatar.element = element;
 
                     element.data('avatar', avatar);
 
-                    row.append(element);
+                    avatar.init();
 
-                    self.popover(
-                        $(element)
-                    );
+                    element.trigger('click')
                 }
             });
-
-            view.set_path(
-                _.get(self.options, 'template_path', 'templates/')
-            );
-
-            view.load_templates().
-                load_panels();
         };
 
         self.add_elements = function (els) {
@@ -357,8 +366,6 @@
         };
 
         self.add_element = function (el) {
-            var attributes = _.get(el, 'attributes', {});
-
             var element = new Avatar(el, self.options);
 
             self.elements.push(element);
@@ -370,21 +377,27 @@
         };
         self.load = function () {
         };
-
-        self._decorate_item = function (element) {
-            return '<div class="col-md-12 avatar" data-toggle="popover"><div class="overlay"></div>' + element + '</div>';
-        };
     };
 
     var methods = {
         init: function (options) {
-            return this.each(function () {
-                var elements = _.get(options, 'elements', $('.elements li'));
+            view.set_path(
+                _.get(options, 'template_path', 'templates/')
+            );
 
-                var builderObj = new Builder($(this), elements, options);
+            var self = this;
 
-                builderObj.init()
+            view.load_html(function() {
+                self.each(function () {
+                    var elements = _.get(options, 'elements', $('.elements li'));
+
+                    var builderObj = new Builder($(this), elements, options);
+
+                    builderObj.init()
+                });
             });
+
+            return self;
         }
     };
 
