@@ -8,16 +8,16 @@
 
         templates: {},
 
-        set_path: function(path) {
+        set_path: function (path) {
             this.templates_path = '/' + path
         },
 
-        path: function(is_element) {
+        path: function (is_element) {
             return this.templates_path + (is_element ? 'elements/' : 'properties/');
         },
 
-        load_html: function(url, callback) {
-            $.get(url).done(function(data) {
+        load_html: function (url, callback) {
+            $.get(url).done(function (data) {
                 callback.call(view, data);
             });
 
@@ -25,11 +25,11 @@
         },
 
 
-        load_panels: function(callback) {
+        load_panels: function (callback) {
             var self = this;
 
-            this.load_html(this.templates_path + 'panels.htm', function(result) {
-                $(result).find('div.panel').each(function() {
+            this.load_html(this.templates_path + 'panels.htm', function (result) {
+                $(result).find('div.panel').each(function () {
                     self.panels[this.id] = $(this)[0].outerHTML;
                 });
 
@@ -39,11 +39,11 @@
             return self;
         },
 
-        load_templates: function(callback) {
+        load_templates: function (callback) {
             var self = this;
 
-            this.load_html(self.templates_path + 'templates.htm', function(result) {
-                $(result).find('script.template').each(function() {
+            this.load_html(self.templates_path + 'templates.htm', function (result) {
+                $(result).find('script.template').each(function () {
                     self.templates[this.id] = $(this).html();
                 });
 
@@ -54,16 +54,16 @@
         },
 
 
-        get_panel: function(panel_name) {
+        get_panel: function (panel_name) {
             return _.get(this.panels, panel_name, '');
         },
 
-        get_template: function(template) {
+        get_template: function (template) {
             return _.get(this.templates, template, '');
         }
     };
 
-    var Panel = function(el, options) {
+    var Panel = function (el, options) {
 
         var self = this;
 
@@ -75,25 +75,25 @@
 
         self.panel_class = _.get(self.options, 'class', 'properties');
 
-        var layout = '<div class="'+self.panel_class+'">%template%<div><p class="cancel">cancel</p><p class="save">save</p></div></div>';
+        var layout = '<div class="' + self.panel_class + '">%template%<div><p class="cancel">cancel</p><p class="save">save</p></div></div>';
 
-        if(_.has(self.options, 'properties.layout') )
+        if (_.has(self.options, 'properties.layout'))
             layout = _.get(self.options, 'properties.layout')
 
-        self.set_layout = function(layout) {
+        self.set_layout = function (layout) {
             self.layout = layout;
 
             return self;
         };
 
-        self.get_layout = function() {
+        self.get_layout = function () {
             return self.layout;
         };
 
         self.set_layout(layout);
 
-        self.open = function(parent) {
-            if( self.is_opened() )
+        self.open = function (parent) {
+            if (self.is_opened())
                 self.close();
 
             var template = self.get_template(),
@@ -105,14 +105,14 @@
 
             var active_panel = $('.' + self.panel_class);
 
-            active_panel.find('.cancel').on('click', function() {
-                if( self.is_opened() )
+            active_panel.find('.cancel').on('click', function () {
+                if (self.is_opened())
                     self.close();
 
                 self.trigger('cancel', [self.element]);
             });
 
-            active_panel.find('.save').on('click', function() {
+            active_panel.find('.save').on('click', function () {
                 var attributes = active_panel
                     .find(":input")
                     .serializeObject();
@@ -123,25 +123,26 @@
             });
         };
 
-        self.close = function() {
+        self.close = function () {
             $(document).find('.properties').remove();
 
             return self;
         };
 
-        self.is_opened = function() {
+        self.is_opened = function () {
             return $(document).find('.properties').length;
         };
 
 
-        self.on = function(event, callback) {
+        self.on = function (event, callback) {
             self.events[event] = callback;
 
             return self;
         };
 
-        self.trigger = function(event, attributes) {
-            var callback = _.get(self.events, event, function() {});
+        self.trigger = function (event, attributes) {
+            var callback = _.get(self.events, event, function () {
+            });
 
             callback.apply(self, attributes);
 
@@ -149,17 +150,17 @@
         };
 
 
-        self.get_element = function() {
+        self.get_element = function () {
             return self.element;
         };
 
-        self.get_template = function() {
+        self.get_template = function () {
             return self.get_element()
                 .get_panel_template(false);
         };
     };
 
-    var Avatar = function(element, options) {
+    var Avatar = function (element, options) {
 
         var self = this;
 
@@ -169,20 +170,20 @@
 
         self.panel = false;
 
-        self.fill = function(attributes) {
-            _.each(attributes, function(v, k) {
+        self.fill = function (attributes) {
+            _.each(attributes, function (v, k) {
                 self.attributes[k] = v;
             });
 
             return self;
         };
 
-        self.get_template = function(clean) {
+        self.get_template = function (clean) {
             var template = view.get_template(
                 _.get(self.element, 'type', 'text')
             );
 
-            if( ! clean ) {
+            if (!clean) {
                 var tpl = _.template(_.unescape(template));
 
                 var panel = self.get_panel_template(true),
@@ -196,12 +197,12 @@
             return template;
         };
 
-        self.get_panel_template = function(clean) {
+        self.get_panel_template = function (clean) {
             var template = view.get_panel(
                 _.get(self.element, 'panel', 'text')
             );
 
-            if( ! clean ) {
+            if (!clean) {
                 var tpl = _.template(_.unescape(template)),
                     panel_attributes = $(template).data();
 
@@ -213,12 +214,12 @@
             return template;
         };
 
-        self.get_attributes = function() {
+        self.get_attributes = function () {
             return _.get(self, 'attributes', {})
         };
 
-        self.get_panel = function() {
-            if(! self.panel) {
+        self.get_panel = function () {
+            if (!self.panel) {
                 self.panel = new Panel(self, self.options)
             }
 
@@ -226,7 +227,7 @@
         };
     };
 
-    var Builder = function(container, draggable, arguments) {
+    var Builder = function (container, draggable, arguments) {
 
         var self = this;
 
@@ -238,51 +239,77 @@
 
         self.sortable_class = 'sortable';
 
-        self.options = _.defaults(arguments, {
-            elements: {}
+        self.options = _.defaultsDeep(arguments, {
+            elements: {},
+            tooltip: {
+                enabled: false,
+                trigger: 'click',
+                content: '<span class="edit">edit</span>',
+                html: true,
+                placement: 'top',
+                container: 'body'
+            }
         });
 
-        self.init = function() {
-            $( self.draggable ).draggable({
+        // move it to avatar, make it as function
+        self.popover = function (ui) {
+            $(ui).popover(
+                _.get(self.options, 'tooltip')
+            ).on('show.bs.popover', function () {
+                    $('[data-toggle=popover]').not(
+                        $(ui)
+                    ).popover('hide');
+                }).on('shown.bs.popover', function () {
+
+                    var avatar = ui.data('avatar'),
+                        popover = ui.data('bs.popover'),
+                        panel = avatar.get_panel(true);
+
+                    if (_.get(self.options, 'tooltip.enabled', false)) {
+                        popover.tip().find('.edit').on('click', function () {
+                            panel.on('save', function (ui, attributes) {
+                                var avatar = $(ui).data('avatar');
+
+                                avatar.fill(attributes);
+
+                                $(ui).attr('class', attributes.size);
+                                $(ui).html(avatar.get_template(false));
+
+                                $(ui).data('avatar', avatar);
+                            }).open();
+                        })
+                    }
+                });
+        };
+
+        self.init = function () {
+
+            $(self.draggable).draggable({
                 revert: "invalid",
                 containment: "document",
                 helper: "clone",
                 cursor: "move"
             });
 
-            $(self.container).find('.avatar').each(function() {
+            $(self.container).find('.avatar').each(function () {
                 var data = $(this).data();
                 var avatar = self.add_element(data);
                 avatar.scope = $(this);
+
                 $(this).data('avatar', avatar);
 
-                $(this).on('click', function() {
-                    var element = $(this),
-                        avatar = element.data('avatar'),
-                        panel = avatar.get_panel(true);
-
-                    panel.on('save', function(ui, attributes) {
-                        var avatar = $(ui).data('avatar');
-
-                        avatar.fill(attributes);
-
-                        $(ui).attr('class', attributes.size);
-                        $(ui).html(avatar.get_template(false));
-
-                        $(ui).data('avatar', avatar);
-                    });
-
-                    panel.open();
-                });
+                self.popover(
+                    $(this)
+                );
             });
 
             $(self.container).find('.row').sortable({
                 revert: true
             }).disableSelection();
 
-            $( self.container ).droppable({
+            $(self.container).droppable({
                 accept: self.draggable,
-                drop: function( event, ui ) {
+                drop: function (event, ui) {
                     var data = $(ui.draggable).data();
 
                     var avatar = self.add_element(data);
@@ -291,10 +318,10 @@
                         avatar.get_template(false))
                     );
 
-                    if( ! self.container.find('.row').length ) {
+                    if (!self.container.find('.row').length) {
                         self.container.append('<div class="row " ' + self.sortable_class + '></div>');
 
-                        $( self.container ).find('.row').sortable({
+                        $(self.container).find('.row').sortable({
                             revert: true
                         }).disableSelection();
                     }
@@ -307,26 +334,9 @@
 
                     row.append(element);
 
-                    element.on('click', function() {
-                        var element = $(this),
-                            avatar = element.data('avatar'),
-                            panel = avatar.get_panel(true);
-
-                        panel.on('save', function(ui, attributes) {
-                            var avatar = $(ui).data('avatar');
-
-                            avatar.fill(attributes);
-
-                            $(ui).attr('class', attributes.size);
-                            $(ui).html(avatar.get_template(false));
-
-                            $(ui).data('avatar', avatar);
-                        });
-
-                        panel.open();
-                    });
-
-                    element.trigger('click');
+                    self.popover(
+                        $(element)
+                    );
                 }
             });
 
@@ -338,15 +348,15 @@
                 load_panels();
         };
 
-        self.add_elements = function(els) {
-            _.each(els, function(el) {
-                 self.add_element(el);
+        self.add_elements = function (els) {
+            _.each(els, function (el) {
+                self.add_element(el);
             });
 
             return self;
         };
 
-        self.add_element = function(el) {
+        self.add_element = function (el) {
             var attributes = _.get(el, 'attributes', {});
 
             var element = new Avatar(el, self.options);
@@ -356,11 +366,13 @@
             return element;
         };
 
-        self.save = function() {};
-        self.load = function() {};
+        self.save = function () {
+        };
+        self.load = function () {
+        };
 
-        self._decorate_item = function(element) {
-            return '<div class="col-md-12 avatar">' + element + '</div>';
+        self._decorate_item = function (element) {
+            return '<div class="col-md-12 avatar" data-toggle="popover"><div class="overlay"></div>' + element + '</div>';
         };
     };
 
