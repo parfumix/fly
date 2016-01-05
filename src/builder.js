@@ -13,7 +13,7 @@
 
     var view = {
 
-        templates_path: '/templates/',
+        templates_path: '/dist/html/templates.htm',
 
         panels: {},
 
@@ -30,7 +30,7 @@
         },
 
         load_html: function (callback) {
-            $.get(view.templates_path + 'general.htm').done(function (result) {
+            $.get(view.templates_path).done(function (result) {
                 $(result).find('div.panel').each(function () {
                     view.panels[$(this).data('id')] = $(this)[0].outerHTML;
                 });
@@ -380,9 +380,10 @@
 
     var methods = {
         init: function (options) {
-            view.set_path(
-                _.get(options, 'template_path', 'templates/')
-            );
+            if(_.has(options, 'template_path') )
+                view.set_path(
+                    _.get(options, 'template_path')
+                );
 
             var self = this;
 
