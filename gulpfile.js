@@ -4,10 +4,10 @@ var concat_util = require('gulp-concat-util');
 
 gulp.task('html', function() {
     gulp.src(['./src/templates/**/*.htm'])
-        .pipe(concat('general.htm'))
+        .pipe(concat('templates.htm'))
         .pipe(concat_util.header('<div>\n'))
         .pipe(concat_util.footer('\n</div>'))
-        .pipe(gulp.dest('./templates/'))
+        .pipe(gulp.dest('./dist/html/'))
 });
 
 gulp.task('default', function() {
