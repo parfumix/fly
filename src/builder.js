@@ -190,7 +190,7 @@
 
                         var popover = $(self.element).data('bs.popover'),
                             panel = self.get_panel();
-                        
+
                         popover.tip().find('.edit').on('click', function () {
                             panel.on('save', function (ui, attributes) {
 
