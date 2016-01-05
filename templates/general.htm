@@ -1,0 +1,120 @@
+<div>
+
+    <div class="panel" data-id="dropdown" data-name="no_name" data-description="" data-required='checked' data-items='[{"checked": "true", "name": "My option"}]' data-size="col-md-12">
+
+        <input type="text" name="name" value="<%=name%>">
+        <br />
+        <br />
+
+        <textarea name="description"><%=description%></textarea>
+
+        <br />
+        <br />
+        <input type="hidden" name="required" value="">
+        Required <input type="checkbox" name="required" value="<%=required%>">
+
+        <br />
+        <br />
+        Options
+        <br />
+
+        <div class="options">
+            <a href="#" class="add_new_option">add new</a>
+        </div>
+        <br />
+        <br />
+
+        Size
+        <select name="size" class="size">
+            <option value="col-md-3">Small</option>
+            <option value="col-md-6">Medium</option>
+            <option value="col-md-12">Large</option>
+        </select>
+        <br />
+        <br />
+        <script>
+            $('select.size').val('<%=size%>');
+        </script>
+
+
+        <script type="text/javascript">
+            $(function() {
+                $(document).on('click', '.option_rm', function() {
+                    if( $(this).closest('.options').find('li').length > 1 )
+                        $(this).closest('li').remove()
+                });
+
+                $('.add_new_option').on('click', function(e, v) {
+                    var value = !v ? '' : v.value;
+
+                    var checked = '';
+                    if(_.get(v, 'checked', 'false') == 'true' )
+                        checked = 'checked';
+
+                    var i = $('.options li').length;
+
+                    var template = '<li>' +
+                            '<input type="checkbox" onClick="$(this).toggle(function(e) { $(this).val(\'true\'); return false; }, function(e) { $(this).val(\'false\'); return false; })" name="items['+i+'][checked]" value="'+_.get(v, 'checked', 'false')+'" '+checked+'>' +
+                            '<input type="hidden" name="items['+i+'][checked]" value="false">' +
+                            '<input type="text" name="items['+i+'][name]" value="'+ value+'">' +
+                            '<a href="#" class="option_rm">rm</a>' +
+                            '</li>';
+                    $('.options').append(template);
+                });
+
+            })
+        </script>
+
+        <% _.forEach(items, function(item) { %>
+        <script>$('.add_new_option').trigger('click', {
+            value: "<%=item.name%>",
+            checked: "<%=item.checked%>"
+        })</script>
+        <% }); %>
+    </div>
+
+    <div class="panel" data-id="text" data-name="no_name" data-placeholder="Placeholder" data-active="inactive" data-size="col-md-12">
+
+        <input type="text" name="name" value="<%=name%>">
+        <input type="text" name="placeholder" value='<%=placeholder%>'>
+
+        Size
+        <select name="size" class="size">
+            <option value="col-md-3">Small</option>
+            <option value="col-md-6">Medium</option>
+            <option value="col-md-12">Large</option>
+        </select>
+        <br />
+        <br />
+        <script>
+            $('select.size').val('<%=size%>');
+        </script>
+    </div>
+
+    <!-- Popovers -->
+        <script type="text/popover" class="popover" data-id="text">
+            <span class="edit">edit</span>
+        </script>
+    <!-- Popovers -->
+
+    <!-- Templates -->
+        <script type="text/template" class="template" data-id="text">
+            <input style="width: 100%; height: 100%;" type="text" name="<%=name%>" placeholder="<%=placeholder%>">
+        </script>
+
+        <script type="text/template" class="template" data-id="textarea">
+            <textarea name="<%=name%>" style="width: 100%; height: 100%; "></textarea>
+        </script>
+
+        <script type="text/template" class="template" data-id="dropdown">
+            <select style="width: 100%">
+
+                <% items.forEach(function(v) { %>
+                <option><%=v.name%></option>
+                <% }); %>
+
+            </select>
+        </script>
+    <!-- End of Templates -->
+
+</div>
