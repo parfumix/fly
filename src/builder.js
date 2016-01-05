@@ -323,7 +323,7 @@
                 accept: self.draggable,
                 drop: function (event, ui) {
                     var avatar = self.add_element(
-                        $(ui.draggable)
+                        $(ui.draggable).clone()
                     );
 
                     var element = $(utils.decorate_item(
