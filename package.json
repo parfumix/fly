@@ -11,13 +11,9 @@
   "dependencies": {
     "bower": "^1.7.1",
     "gulp": "^3.9.0",
-    "gulp-browserify": "^0.5.1",
-    "gulp-concat": "^2.6.0",
-    "gulp-livereload": "^3.8.1",
-    "gulp-styl": "^1.1.0",
-    "tiny-lr": "^0.2.1"
+    "gulp-concat": "^2.6.0"
   },
   "devDependencies": {
-    "gulp-foreach": "^0.1.0"
+    "gulp-concat-util": "^0.5.4"
   }
 }
