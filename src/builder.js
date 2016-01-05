@@ -108,8 +108,6 @@
                 if (self.is_opened())
                     self.close();
 
-                $('[data-toggle=popover]').popover('hide');
-
                 self.trigger('cancel', [self.avatar['element']]);
             });
 
@@ -117,8 +115,6 @@
                 var attributes = active_panel
                     .find(":input")
                     .serializeObject();
-
-                $('[data-toggle=popover]').popover('hide');
 
                 self.trigger('save', [self.avatar['element'], attributes]);
 
@@ -207,6 +203,8 @@
                                 $(self.element).data('avatar', self);
                             });
 
+                            $('[data-toggle=popover]').popover('hide');
+                            
                             panel.open();
                         })
                     }
