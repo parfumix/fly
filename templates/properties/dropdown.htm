@@ -1,60 +1,91 @@
-<div data-name="no_name" data-description="" data-required='checked' data-items='[{"checked": "true", "name": "My option"}]'>
+<div class="panel" data-id="dropdown" data-name="no_name" data-description="" data-required='checked' data-css_style="" data-items='[{"checked": "true", "name": "My option"}]' data-size="col-md-12">
 
-    <input type="text" name="name" value="<%=name%>">
-    <br />
-    <br />
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a></li>
+        <li role="presentation"><a href="#validation" aria-controls="validation" role="tab" data-toggle="tab">Validation</a></li>
+        <li role="presentation"><a href="#style" aria-controls="style" role="tab" data-toggle="tab">Style</a></li>
+    </ul>
 
-    <textarea name="description"><%=description%></textarea>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="general">
 
-    <br />
-    <br />
-    <input type="hidden" name="required" value="">
-    Required <input type="checkbox" name="required" value="<%=required%>">
+            <input type="text" name="name" value="<%=name%>">
+            <br />
+            <br />
 
-    <br />
-    <br />
-    Options
-    <br />
+            <textarea name="description"><%=description%></textarea>
 
-    <div class="options">
-        <a href="#" class="add_new_option">add new</a>
+            <br />
+            <br />
+            Options
+            <br />
+
+            <div class="options">
+                <a href="#" class="add_new_option">add new</a>
+            </div>
+            <br />
+            <br />
+
+            <script type="text/javascript">
+                $(function() {
+                    $(document).on('click', '.option_rm', function() {
+                        if( $(this).closest('.options').find('li').length > 1 )
+                            $(this).closest('li').remove()
+                    });
+
+                    $('.add_new_option').on('click', function(e, v) {
+                        var value = !v ? '' : v.value;
+
+                        var checked = '';
+                        if(_.get(v, 'checked', 'false') == 'true' )
+                            checked = 'checked';
+
+                        var i = $('.options li').length;
+
+                        var template = '<li>' +
+                                '<input type="checkbox" onClick="$(this).toggle(function(e) { $(this).val(\'true\'); return false; }, function(e) { $(this).val(\'false\'); return false; })" name="items['+i+'][checked]" value="'+_.get(v, 'checked', 'false')+'" '+checked+'>' +
+                                '<input type="hidden" name="items['+i+'][checked]" value="false">' +
+                                '<input type="text" name="items['+i+'][name]" value="'+ value+'">' +
+                                '<a href="#" class="option_rm">rm</a>' +
+                                '</li>';
+                        $('.options').append(template);
+                    });
+                })
+            </script>
+
+            <% _.forEach(items, function(item) { %>
+            <script>$('.add_new_option').trigger('click', {
+                value: "<%=item.name%>",
+                checked: "<%=item.checked%>"
+            })</script>
+            <% }); %>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="validation">
+            <br />
+            <br />
+            <input type="hidden" name="required" value="">
+            Required <input type="checkbox" name="required" value="<%=required%>">
+        </div>
+        <div role="tabpanel" class="tab-pane" id="style">
+            <textarea name="css_style"><%=css_style%></textarea>
+
+            <br />
+            <br />
+            Size
+            <select name="size" class="size">
+                <option value="col-md-3">Small</option>
+                <option value="col-md-6">Medium</option>
+                <option value="col-md-12">Large</option>
+            </select>
+            <br />
+            <br />
+            <script>
+                $('select.size').val('<%=size%>');
+            </script>
+
+        </div>
     </div>
-    <br />
-    <br />
 
-    <script type="text/javascript">
-        $(function() {
-            $(document).on('click', '.option_rm', function() {
-                if( $(this).closest('.options').find('li').length > 1 )
-                    $(this).closest('li').remove()
-            });
-
-            $('.add_new_option').on('click', function(e, v) {
-                var value = !v ? '' : v.value;
-
-                var checked = '';
-                if(_.get(v, 'checked', 'false') == 'true' )
-                    checked = 'checked';
-
-                var i = $('.options li').length;
-
-                var template = '<li>' +
-                            '<input type="checkbox" onClick="$(this).toggle(function(e) { $(this).val(\'true\'); return false; }, function(e) { $(this).val(\'false\'); return false; })" name="items['+i+'][checked]" value="'+_.get(v, 'checked', 'false')+'" '+checked+'>' +
-                            '<input type="hidden" name="items['+i+'][checked]" value="false">' +
-                            '<input type="text" name="items['+i+'][name]" value="'+ value+'">' +
-                            '<a href="#" class="option_rm">rm</a>' +
-                        '</li>';
-                $('.options').append(template);
-            });
-
-        })
-    </script>
-
-    <% items.forEach(function(v, k) { %>
-        <script>$('.add_new_option').trigger('click', {
-            value: "<%=v.name%>",
-            checked: "<%=v.checked%>"
-        })</script>
-    <% }); %>
 </div>
-

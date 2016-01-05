@@ -1,10 +1,42 @@
-<div data-name="no_name" data-placeholder="Placeholder" data-active="inactive">
+<div class="panel" data-id="text" data-required='checked' data-name="no_name" data-css_style="" data-placeholder="Placeholder" data-active="inactive" data-size="col-md-12">
 
-    <input type="text" name="name" value="<%=name%>">
-    <input type="text" name="placeholder" value='<%=placeholder%>'>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a></li>
+        <li role="presentation"><a href="#validation" aria-controls="validation" role="tab" data-toggle="tab">Validation</a></li>
+        <li role="presentation"><a href="#style" aria-controls="style" role="tab" data-toggle="tab">Style</a></li>
+    </ul>
 
-    <script>
-        $('#ssss').val('<%=active%>');
-    </script>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="general">
+            <input type="text" name="name" value="<%=name%>">
+            <input type="text" name="placeholder" value='<%=placeholder%>'>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="validation">
+            <br />
+            <br />
+            <input type="hidden" name="required" value="">
+            Required <input type="checkbox" name="required" value="<%=required%>">
+        </div>
+        <div role="tabpanel" class="tab-pane" id="style">
+            <textarea name="css_style"><%=css_style%></textarea>
+
+            <br />
+            <br />
+            Size
+            <select name="size" class="size">
+                <option value="col-md-3">Small</option>
+                <option value="col-md-6">Medium</option>
+                <option value="col-md-12">Large</option>
+            </select>
+            <br />
+            <br />
+            <script>
+                $('select.size').val('<%=size%>');
+            </script>
+
+        </div>
+    </div>
+
 </div>
-
