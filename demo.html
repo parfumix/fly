@@ -42,8 +42,24 @@
             text-indent: -999em;
         }
 
-        .row > div {
-            border: 1px solid red;
+        .popover {
+            z-index: 160000;
+        }
+
+        .avatar {
+            position: relative;
+        }
+
+        .avatar:hover > div {
+            border:1px solid blue;
+        }
+
+        .avatar .overlay {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
         }
     </style>
 </head>
@@ -68,7 +84,8 @@
 <div class="row">
     <div class="col-md-6" style="height: 100%;">
         <div class="row">
-            <div class="col-md-12 avatar" data-type="text">
+            <div class="col-md-12 avatar" data-type="text" data-toggle="popover">
+                <div class="overlay"></div>
                 <input type="text">
             </div>
         </div>
@@ -80,6 +97,13 @@
 
 </body>
 
+<!--
+    As here we have panel options we need give the user possibillity to extend him
+
+        1. let it declare custom class
+        2. let it to declare custom layout
+
+-->
 
 <script type="text/javascript">
     $(function () {
