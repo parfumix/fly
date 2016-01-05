@@ -204,7 +204,7 @@
                             });
 
                             $('[data-toggle=popover]').popover('hide');
-                            
+
                             panel.open();
                         })
                     }
@@ -348,6 +348,7 @@
 
                     element.data('avatar', avatar);
 
+                    avatar.get_panel().close();
                     avatar.init();
 
                     element.trigger('click')
