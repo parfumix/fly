@@ -180,41 +180,17 @@
         self.init = function() {
             var tooltip = _.get(self.options, 'tooltip');
 
-            if( self.get_popover() )
-                tooltip.content = self.get_popover();
+            if( self.get_popover() ) {
+                tooltip.content = $(self.get_popover());
+                tooltip.content.find('.root').data({
+                    avatar: self,
+                    panel : self.get_panel()
+                });
+            }
 
-            $(self.element).popover(tooltip).on('show.bs.popover', function () {
-                    $('[data-toggle=popover]').not(
-                        $(self.element)
-                    ).popover('hide');
-                }).on('shown.bs.popover', function () {
-                    if (_.get(self.options, 'tooltip.enabled', false)) {
-
-                        var popover = $(self.element).data('bs.popover'),
-                            panel = self.get_panel();
-
-                        popover.tip().find('.edit').on('click', function () {
-                            panel.on('save', function (ui, attributes) {
-
-                                utils.debug('Saved Attributes ->');
-                                utils.debug(attributes);
-
-                                self.fill(attributes);
-
-                                $(self.element).attr('class', attributes.size + ' avatar');
-
-                                $(self.element).html(
-                                    self.get_template(false)
-                                );
-
-                                $(self.element).data('avatar', self);
-                            });
-
-                            $('[data-toggle=popover]').popover('hide');
-
-                            panel.open();
-                        })
-                    }
+            self.get_element().popover(tooltip)
+                .on('show.bs.popover', function () {
+                    $('[data-toggle=popover]').not( $(self.element) ).popover('hide');
                 });
         };
 
@@ -264,6 +240,10 @@
             }
 
             return panel;
+        };
+
+        self.get_element = function() {
+            return $(self.element);
         };
 
         self.get_popover = function() {
@@ -316,19 +296,13 @@
                 cursor: "move"
             });
 
-            $(self.container).find('.avatar').each(function () {
-                var avatar = self.add_element(this);
+            self.init_from_html();
 
-                $(this).data('avatar', avatar);
-
-                avatar.init()
-            });
-
-            $(self.container).find('.row').sortable({
+            self.get_container().find('.row').sortable({
                 revert: true
             }).disableSelection();
 
-            $(self.container).droppable({
+            self.get_container().droppable({
                 accept: self.draggable,
                 drop: function (event, ui) {
                     var avatar = self.add_element(
@@ -356,10 +330,21 @@
                     element.data('avatar', avatar);
 
                     avatar.get_panel().close();
+
                     avatar.init();
 
                     element.trigger('click')
                 }
+            });
+        };
+
+        self.init_from_html = function() {
+            self.get_container().find('.avatar').each(function () {
+                var avatar = self.add_element(this);
+
+                $(this).data('avatar', avatar);
+
+                avatar.init()
             });
         };
 
@@ -377,6 +362,10 @@
             self.elements.push(element);
 
             return element;
+        };
+
+        self.get_container = function() {
+            return $(self.container);
         };
 
         self.save = function () {
