@@ -12,16 +12,11 @@
         <div role="tabpanel" class="tab-pane active" id="general">
 
             <input type="text" name="name" value="<%=name%>">
-            <br />
-            <br />
-
-            <textarea name="description"><%=description%></textarea>
 
             <br />
             <br />
             Options
             <br />
-
 
             <div class="options" >
                 <a href="#" class="add_new_option">add new</a>
@@ -45,21 +40,33 @@
                         var i = jQuery('.options li').length;
 
                         var template = '<li>' +
-                                '<input type="checkbox" onClick="jQuery(this).toggle(function(e) { jQuery(this).val(\'true\'); return false; }, function(e) { jQuery(this).val(\'false\'); return false; })" name="items['+i+'][checked]" value="'+_.get(v, 'checked', 'false')+'" '+checked+'>' +
                                 '<input type="hidden" name="items['+i+'][checked]" value="false">' +
+                                '<input type="radio" class="is_checked" name="items['+i+'][checked]" value="'+_.get(v, 'checked', 'false')+'" '+checked+'>' +
                                 '<input type="text" name="items['+i+'][name]" value="'+ value+'">' +
                                 '<a href="#" class="option_rm">rm</a>' +
                                 '</li>';
                         jQuery('.options').append(template);
+
+                        return false;
                     });
+
+                    jQuery('.options').on('click','.is_checked', function() {
+                        if( $(this).is(':checked') ) {
+                            $(this).val('true')
+                        } else {
+                            $(this).val('false')
+                        }
+                    })
                 })
             </script>
 
             <% _.forEach(items, function(item) { %>
-            <script>jQuery('.add_new_option').trigger('click', {
-                value: "<%=item.name%>",
-                checked: "<%=item.checked%>"
-            })</script>
+            <script>
+                jQuery('.add_new_option').trigger('click', {
+                    value: "<%=item.name%>",
+                    checked: "<%=item.checked%>"
+                })
+            </script>
             <% }); %>
         </div>
         <div role="tabpanel" class="tab-pane" id="validation">
@@ -81,6 +88,15 @@
             </script>
         </div>
         <div role="tabpanel" class="tab-pane" id="style">
+            <input type="text" name="label" value="<%=label%>">
+            <br />
+            <br />
+
+            <label>Description</label>
+            <textarea name="description"><%=description%></textarea>
+            <br />
+            <br />
+
             <textarea name="css_style"><%=css_style%></textarea>
 
             <br />
