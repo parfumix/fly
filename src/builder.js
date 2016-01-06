@@ -1,6 +1,7 @@
 (function ($) {
 
     var utils = {
+
         DEBUGG: true,
 
         decorate_item: function (element) {
@@ -248,7 +249,7 @@
 
         self.get_popover = function() {
             var popover = view.get_popover(
-                _.get(self.attributes, 'popover', 'text')
+                _.get(self.attributes, 'popover', 'general')
             );
 
             return popover;
