@@ -1,3 +1,16 @@
-<script type="text/template" class="template" data-id="checkbox">
-    <input type="checkbox" class="form-control" name="<%=name%>" placeholder="<%=placeholder%>">
-</script>
+<div class="template" data-id="checkbox">
+    <label><%=label%></label>
+
+    <% items.forEach(function(v) { %>
+        <input type="checkbox" class="form-control" name="<%=name%>[]" checked="<%=v.checekd%>" value="<%=v.name%>"><%=v.name%>
+    <% }); %>
+
+    <script type="text/javascript">
+        var description = '<%=description%>';
+
+        jQuery('.description').remove()
+        if(description) {
+            jQuery('label').after('<p class="description">'+description+'</p>')
+        }
+    </script>
+</div>

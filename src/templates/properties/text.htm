@@ -1,9 +1,11 @@
-<div class="panel" data-id="text" data-required='checked' data-name="no_name" data-css_style="" data-placeholder="Placeholder" data-active="inactive" data-size="col-md-12">
+<div class="panel" data-id="text" data-required='true' data-name="no_name" data-css_style="" data-placeholder="Placeholder" data-active="inactive" data-size="col-md-12">
 
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a></li>
-        <li role="presentation"><a href="#validation" aria-controls="validation" role="tab" data-toggle="tab">Validation</a></li>
+        <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a>
+        </li>
+        <li role="presentation"><a href="#validation" aria-controls="validation" role="tab"
+                                   data-toggle="tab">Validation</a></li>
         <li role="presentation"><a href="#style" aria-controls="style" role="tab" data-toggle="tab">Style</a></li>
     </ul>
 
@@ -14,24 +16,38 @@
             <input type="text" name="placeholder" value='<%=placeholder%>'>
         </div>
         <div role="tabpanel" class="tab-pane" id="validation">
-            <br />
-            <br />
-            <input type="hidden" name="required" value="">
+            <br/>
+            <br/>
+
+            <input type="hidden" name="required" value="false">
             Required <input type="checkbox" name="required" value="<%=required%>">
+
+            <script>
+                jQuery('input[name=required]').on('click', function(e) {
+                    if(! jQuery(this).is(':checked')) {
+                        jQuery(this).val('false')
+                    } else {
+                        jQuery(this).val('true')
+                    }
+                });
+
+                jQuery('input[name=required]').prop('checked', <%=required%>);
+            </script>
+
         </div>
         <div role="tabpanel" class="tab-pane" id="style">
             <textarea name="css_style"><%=css_style%></textarea>
 
-            <br />
-            <br />
+            <br/>
+            <br/>
             Size
             <select name="size" class="size">
                 <option value="col-md-3">Small</option>
                 <option value="col-md-6">Medium</option>
                 <option value="col-md-12">Large</option>
             </select>
-            <br />
-            <br />
+            <br/>
+            <br/>
             <script>
                 jQuery('select.size').val('<%=size%>');
             </script>
