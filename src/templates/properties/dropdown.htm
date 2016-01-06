@@ -29,34 +29,34 @@
             <br />
 
             <script type="text/javascript">
-                $(function() {
-                    $(document).on('click', '.option_rm', function() {
-                        if( $(this).closest('.options').find('li').length > 1 )
-                            $(this).closest('li').remove()
+                jQuery(function() {
+                    jQuery(document).on('click', '.option_rm', function() {
+                        if( jQuery(this).closest('.options').find('li').length > 1 )
+                            jQuery(this).closest('li').remove()
                     });
 
-                    $('.add_new_option').on('click', function(e, v) {
+                    jQuery('.add_new_option').on('click', function(e, v) {
                         var value = !v ? '' : v.value;
 
                         var checked = '';
                         if(_.get(v, 'checked', 'false') == 'true' )
                             checked = 'checked';
 
-                        var i = $('.options li').length;
+                        var i = jQuery('.options li').length;
 
                         var template = '<li>' +
-                                '<input type="checkbox" onClick="$(this).toggle(function(e) { $(this).val(\'true\'); return false; }, function(e) { $(this).val(\'false\'); return false; })" name="items['+i+'][checked]" value="'+_.get(v, 'checked', 'false')+'" '+checked+'>' +
+                                '<input type="checkbox" onClick="jQuery(this).toggle(function(e) { jQuery(this).val(\'true\'); return false; }, function(e) { jQuery(this).val(\'false\'); return false; })" name="items['+i+'][checked]" value="'+_.get(v, 'checked', 'false')+'" '+checked+'>' +
                                 '<input type="hidden" name="items['+i+'][checked]" value="false">' +
                                 '<input type="text" name="items['+i+'][name]" value="'+ value+'">' +
                                 '<a href="#" class="option_rm">rm</a>' +
                                 '</li>';
-                        $('.options').append(template);
+                        jQuery('.options').append(template);
                     });
                 })
             </script>
 
             <% _.forEach(items, function(item) { %>
-            <script>$('.add_new_option').trigger('click', {
+            <script>jQuery('.add_new_option').trigger('click', {
                 value: "<%=item.name%>",
                 checked: "<%=item.checked%>"
             })</script>
@@ -82,7 +82,7 @@
             <br />
             <br />
             <script>
-                $('select.size').val('<%=size%>');
+                jQuery('select.size').val('<%=size%>');
             </script>
 
         </div>

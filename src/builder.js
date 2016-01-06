@@ -4,10 +4,6 @@
 
         decorate_item: function (element) {
             return '<div class="col-md-12 avatar" data-toggle="popover">' + element + '</div>';
-        },
-
-        add_overlay: function(element) {
-            return '<div class="overlay"></div>' + element;
         }
     };
 
@@ -195,9 +191,7 @@
                                 $(self.element).attr('class', attributes.size + ' avatar');
 
                                 $(self.element).html(
-                                    utils.add_overlay(
-                                        self.get_template(false)
-                                    )
+                                    self.get_template(false)
                                 );
 
                                 $(self.element).data('avatar', self);
@@ -327,9 +321,7 @@
                     );
 
                     var element = $(utils.decorate_item(
-                        utils.add_overlay(
-                            avatar.get_template(false))
-                        )
+                        avatar.get_template(false))
                     );
 
                     if (! self.container.find('.row').length) {
