@@ -183,6 +183,7 @@
 
             if( self.get_popover() ) {
                 tooltip.content = $(self.get_popover());
+
                 tooltip.content.find('.root').data({
                     avatar: self,
                     panel : self.get_panel()
@@ -190,7 +191,7 @@
             }
 
             self.get_element().popover(tooltip)
-                .on('show.bs.popover', function () {
+                .on('show.bs.popover', function (e) {
                     $('[data-toggle=popover]').not( $(self.element) ).popover('hide');
                 });
         };
@@ -262,6 +263,12 @@
 
             return self.panel;
         };
+
+        self.remove_from_dom = function() {
+            self.get_element().remove();
+
+            return self;
+        }
     };
 
     var Builder = function (container, draggable, arguments) {

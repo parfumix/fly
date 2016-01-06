@@ -3,9 +3,19 @@
         <div class="root"></div>
 
         <span class="edit">edit</span>
+        <span class="remove">remove</span>
 
         <script type="text/javascript">
-            var data = $('.root').data(), avatar = data['avatar'], element = avatar.get_element(), panel = data['panel'];
+            var data = $('.root').data(),
+                    avatar = data['avatar'],
+                    panel = data['panel'],
+                    tooltip = data['tooltip'],
+                    element = avatar.get_element();
+
+
+            $('.remove').on('click', function () {
+                avatar.remove_from_dom();
+            });
 
             $('.edit').on('click', function () {
                 panel.on('save', function (ui, attributes) {
