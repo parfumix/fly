@@ -1,3 +1,29 @@
 <div class="popover" data-id="text">
-    <span class="edit">edit</span>
+    <div>
+        <div class="root"></div>
+
+        <span class="edit">edit</span>
+
+        <script type="text/javascript">
+            var data = $('.root').data(), avatar = data['avatar'], element = avatar.get_element(), panel = data['panel'];
+
+            $('.edit').on('click', function () {
+                panel.on('save', function (ui, attributes) {
+                    avatar.fill(attributes);
+
+                    element.attr('class', attributes.size + ' avatar');
+
+                    $(element).html(
+                        avatar.get_template(false)
+                    );
+
+                    $(element).data('avatar', avatar);
+                });
+
+                $('[data-toggle=popover]').popover('hide');
+
+                panel.open();
+            });
+        </script>
+    </div>
 </div>
