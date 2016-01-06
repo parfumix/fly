@@ -1,9 +1,17 @@
 (function ($) {
 
     var utils = {
+        DEBUGG: true,
 
         decorate_item: function (element) {
             return '<div class="col-md-12 avatar" data-toggle="popover">' + element + '</div>';
+        },
+
+        debug: function(message) {
+            if( utils.DEBUGG )
+                console.log(message);
+
+            return utils;
         }
     };
 
@@ -31,13 +39,15 @@
                     view.panels[$(this).data('id')] = $(this)[0].outerHTML;
                 });
 
-                $(result).find('script.template').each(function () {
+                $(result).find('div.template').each(function () {
                     view.templates[$(this).data('id')] = $(this).html();
                 });
 
-                $(result).find('script.popover').each(function () {
+                $(result).find('div.popover').each(function () {
                     view.popovers[$(this).data('id')] = $(this).html();
                 });
+
+                utils.debug('Loaded html');
 
                 _.isFunction(callback) ? callback.call(view) : false;
             });
@@ -186,6 +196,9 @@
                         popover.tip().find('.edit').on('click', function () {
                             panel.on('save', function (ui, attributes) {
 
+                                utils.debug('Saved Attributes ->');
+                                utils.debug(attributes);
+
                                 self.fill(attributes);
 
                                 $(self.element).attr('class', attributes.size + ' avatar');
@@ -239,11 +252,13 @@
 
             if (!clean) {
                 var tpl = _.template(_.unescape(panel));
+
                 var attributes = $(panel).data();
 
-                var attr = self.attributes;
+                utils.debug('Loaded Attributes ->');
+                utils.debug(attributes);
 
-                attributes = _.merge(attributes, attr);
+                attributes = _.merge(attributes, self.attributes);
 
                 panel = tpl(attributes);
             }
