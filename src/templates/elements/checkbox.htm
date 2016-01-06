@@ -1,16 +1,18 @@
 <div class="template" data-id="checkbox">
-    <label><%=label%></label>
+    <span class="temp"></span>
 
     <% items.forEach(function(v) { %>
-        <input type="checkbox" class="form-control" name="<%=name%>[]" checked="<%=v.checekd%>" value="<%=v.name%>"><%=v.name%>
+        <input type="checkbox" class="form-control" name="<%=name%>[]" checked="<%=v.checked%>" value="<%=v.name%>"><%=v.name%>
     <% }); %>
 
     <script type="text/javascript">
+        var label = '<%=label%>';
         var description = '<%=description%>';
 
-        jQuery('.description').remove()
-        if(description) {
-            jQuery('label').after('<p class="description">'+description+'</p>')
-        }
+        if(description)
+            jQuery('.temp').after('<p>'+description+'</p>');
+
+        if(label)
+            jQuery('.temp').after('<label>'+label+'</label>');
     </script>
 </div>

@@ -1,4 +1,4 @@
-<div class="panel" data-label="My Label" data-id="checkbox" data-name="no_name" data-description="" data-css_style="" data-items='[{"checked": "true", "name": "value1"}]' data-size="col-md-12">
+<div class="panel" data-label="My Label" data-id="checkbox" data-name="no_name" data-description="My Description" data-css_style="" data-items='[{"checked": "true", "name": "value1"}]' data-size="col-md-12">
 
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
@@ -11,10 +11,6 @@
         <div role="tabpanel" class="tab-pane active" id="general">
 
             <input type="text" name="name" value="<%=name%>">
-            <br />
-            <br />
-
-            <textarea name="description"><%=description%></textarea>
 
             <br />
             <br />
@@ -63,6 +59,16 @@
         </div>
 
         <div role="tabpanel" class="tab-pane" id="style">
+            <input type="text" name="label" value="<%=label%>">
+            <br />
+            <br />
+
+            <label>Description</label>
+            <textarea name="description"><%=description%></textarea>
+            <br />
+            <br />
+
+            <label>Style</label>
             <textarea name="css_style"><%=css_style%></textarea>
 
             <br />
