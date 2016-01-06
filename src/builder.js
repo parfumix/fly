@@ -247,7 +247,7 @@
 
         self.get_panel_template = function (clean) {
             var panel = view.get_panel(
-                _.get(self.attributes, 'panel', 'text')
+                _.get(self.attributes, 'panel', 'general')
             );
 
             if (!clean) {
