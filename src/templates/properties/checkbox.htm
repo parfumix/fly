@@ -1,0 +1,85 @@
+<div class="panel" data-label="My Label" data-id="checkbox" data-name="no_name" data-description="" data-css_style="" data-items='[{"checked": "true", "name": "value1"}]' data-size="col-md-12">
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a></li>
+        <li role="presentation"><a href="#style" aria-controls="style" role="tab" data-toggle="tab">Style</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="general">
+
+            <input type="text" name="name" value="<%=name%>">
+            <br />
+            <br />
+
+            <textarea name="description"><%=description%></textarea>
+
+            <br />
+            <br />
+            Options
+            <br />
+
+
+            <div class="options" >
+                <a href="#" class="add_new_option">add new</a>
+            </div>
+            <br /><br />
+
+            <script type="text/javascript">
+                jQuery(function() {
+                    jQuery(document).on('click', '.option_rm', function() {
+                        if( jQuery(this).closest('.options').find('li').length > 1 )
+                            jQuery(this).closest('li').remove()
+                    });
+
+                    jQuery('.add_new_option').on('click', function(e, v) {
+                        var value = !v ? '' : v.value;
+
+                        var checked = '';
+                        if(_.get(v, 'checked', 'false') == 'true' )
+                            checked = 'checked';
+
+                        var i = jQuery('.options li').length;
+
+                        var template = '<li>' +
+                                '<input type="checkbox" onClick="jQuery(this).toggle(function(e) { jQuery(this).val(\'true\'); return false; }, function(e) { jQuery(this).val(\'false\'); return false; })" name="items['+i+'][checked]" value="'+_.get(v, 'checked', 'false')+'" '+checked+'>' +
+                                '<input type="hidden" name="items['+i+'][checked]" value="false">' +
+                                '<input type="text" name="items['+i+'][name]" value="'+ value+'">' +
+                                '<a href="#" class="option_rm">rm</a>' +
+                                '</li>';
+                        jQuery('.options').append(template);
+                    });
+                })
+            </script>
+
+            <% _.forEach(items, function(item) { %>
+            <script>jQuery('.add_new_option').trigger('click', {
+                value: "<%=item.name%>",
+                checked: "<%=item.checked%>"
+            })</script>
+            <% }); %>
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="style">
+            <textarea name="css_style"><%=css_style%></textarea>
+
+            <br />
+            <br />
+            Size
+            <select name="size" class="size">
+                <option value="col-md-3">Small</option>
+                <option value="col-md-6">Medium</option>
+                <option value="col-md-12">Large</option>
+            </select>
+            <br />
+            <br />
+            <script>
+                jQuery('select.size').val('<%=size%>');
+            </script>
+
+        </div>
+    </div>
+
+</div>
