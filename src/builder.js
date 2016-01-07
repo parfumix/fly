@@ -271,22 +271,20 @@
         }
     };
 
-    var Builder = function (container, draggable, arguments) {
+    var Builder = function (elements, arguments) {
 
         var self = this;
 
-        self.draggable = draggable;
+        self.elements = elements;
 
-        self.elements = [];
-
-        self.container = container;
+        self.avatars = [];
 
         self.sortable_class = 'sortable';
 
         self.options = _.defaultsDeep(arguments, {
             elements: {},
             tooltip: {
-                enabled: false,
+                enabled: true,
                 trigger: 'click',
                 content: '<span class="edit">edit</span>',
                 html: true,
@@ -296,59 +294,80 @@
         });
 
         self.init = function () {
+            var box = {};
 
-            $(self.draggable).draggable({
-                revert: "invalid",
-                containment: "document",
-                helper: "clone",
-                cursor: "move"
+            $(self.elements).each(function() {
+                var selector = $(this).data('container');
+
+                if( _.has(box, selector) ) {
+                    var container = _.get(box, selector);
+                    container['elements'].push($(this))
+                } else {
+                    box[selector] = {
+                        container: $('#' + selector),
+                        elements: [$(this)]
+                    }
+                }
             });
 
-            self.init_from_html();
+            _.each(box, function(v, k) {
+                var elements = $('[data-container='+k+']'),
+                    container = v.container;
 
-            self.get_container().find('.row').sortable({
-                revert: true
-            }).disableSelection();
+                //make it draggable
+                elements.draggable({
+                    revert: "invalid",
+                    containment: "document",
+                    helper: "clone",
+                    cursor: "move"
+                });
 
-            self.get_container().droppable({
-                accept: self.draggable,
-                drop: function (event, ui) {
-                    var avatar = self.add_element(
-                        $(ui.draggable).clone()
-                    );
+                container.find('.row').sortable({
+                    revert: true
+                }).disableSelection();
 
-                    var element = $(utils.decorate_item(
-                        avatar.get_template(false))
-                    );
+                self.init_from_html(container);
 
-                    if (! self.container.find('.row').length) {
-                        self.container.append('<div class="row " ' + self.sortable_class + '></div>');
+                container.droppable({
+                    accept: elements,
+                    drop: function (event, ui) {
+                        var avatar = self.add_avatar(
+                            $(ui.draggable).clone()
+                        );
 
-                        $(self.container).find('.row').sortable({
-                            revert: true
-                        }).disableSelection();
+                        var element = $(utils.decorate_item(
+                            avatar.get_template(false))
+                        );
+
+                        if (! container.find('.row').length) {
+                            container.append('<div class="row " ' + self.sortable_class + '></div>');
+
+                            container.find('.row').sortable({
+                                revert: true
+                            }).disableSelection();
+                        }
+
+                        var row = container.find('div.row');
+
+                        row.append(element);
+
+                        avatar.element = element;
+
+                        element.data('avatar', avatar);
+
+                        avatar.get_panel().close();
+
+                        avatar.init();
+
+                        element.trigger('click')
                     }
-
-                    var row = self.container.find('div.row');
-
-                    row.append(element);
-
-                    avatar.element = element;
-
-                    element.data('avatar', avatar);
-
-                    avatar.get_panel().close();
-
-                    avatar.init();
-
-                    element.trigger('click')
-                }
+                });
             });
         };
 
-        self.init_from_html = function() {
-            self.get_container().find('.avatar').each(function () {
-                var avatar = self.add_element(this);
+        self.init_from_html = function(container) {
+           $(container).find('.avatar').each(function () {
+                var avatar = self.add_avatar(this);
 
                 $(this).data('avatar', avatar);
 
@@ -356,20 +375,20 @@
             });
         };
 
-        self.add_elements = function (els) {
-            _.each(els, function (el) {
-                self.add_element(el);
+        self.add_avatars = function (avs) {
+            _.each(avs, function (avatar) {
+                self.add_avatar(avatar);
             });
 
             return self;
         };
 
-        self.add_element = function (el) {
-            var element = new Avatar(el, self.options);
+        self.add_avatar = function (av) {
+            var avatar = new Avatar(av, self.options);
 
-            self.elements.push(element);
+            self.avatars.push(avatar);
 
-            return element;
+            return avatar;
         };
 
         self.get_container = function() {
@@ -392,13 +411,8 @@
             var self = this;
 
             view.load_html(function() {
-                self.each(function () {
-                    var elements = _.get(options, 'elements', $('.elements li'));
-
-                    var builderObj = new Builder($(this), elements, options);
-
-                    builderObj.init()
-                });
+                (new Builder($(self), options))
+                    .init()
             });
 
             return self;
