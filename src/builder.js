@@ -304,7 +304,7 @@
                     container['elements'].push($(this))
                 } else {
                     box[selector] = {
-                        container: $('#' + selector),
+                        container: $('.' + selector),
                         elements: [$(this)]
                     }
                 }
@@ -323,7 +323,7 @@
                 });
 
                 container.find('.row').sortable({
-                    revert: true
+                    revert: 10
                 }).disableSelection();
 
                 self.init_from_html(container);
