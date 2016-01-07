@@ -6,31 +6,31 @@
         <span class="remove">remove</span>
 
         <script type="text/javascript">
-            var data = $('.root').data(),
+            var data = jQuery('.root').data(),
                     avatar = data['avatar'],
                     panel = data['panel'],
                     tooltip = data['tooltip'],
                     element = avatar.get_element();
 
 
-            $('.remove').on('click', function () {
+            jQuery('.remove').on('click', function () {
                 avatar.remove_from_dom();
             });
 
-            $('.edit').on('click', function () {
+            jQuery('.edit').on('click', function () {
                 panel.on('save', function (ui, attributes) {
                     avatar.fill(attributes);
 
                     element.attr('class', attributes.size + ' avatar');
 
-                    $(element).html(
+                    jQuery(element).html(
                         avatar.get_template(false)
                     );
 
-                    $(element).data('avatar', avatar);
+                    jQuery(element).data('avatar', avatar);
                 });
 
-                $('[data-toggle=popover]').popover('hide');
+                jQuery('[data-toggle=popover]').popover('hide');
 
                 panel.open();
             });
