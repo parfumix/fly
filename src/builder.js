@@ -191,7 +191,7 @@
             }
 
             self.get_element().popover(tooltip)
-                .on('show.bs.popover', function (e) {
+                .on('show.bs.popover', function () {
                     $('[data-toggle=popover]').not( $(self.element) ).popover('hide');
                 });
         };

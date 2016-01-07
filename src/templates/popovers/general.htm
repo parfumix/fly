@@ -6,34 +6,35 @@
         <span class="remove">remove</span>
 
         <script type="text/javascript">
-            var data = jQuery('.root').data(),
-                    avatar = data['avatar'],
-                    panel = data['panel'],
-                    tooltip = data['tooltip'],
-                    element = avatar.get_element();
+            (function($) {
+                var data = $('.root').data(),
+                        avatar = data['avatar'],
+                        panel = data['panel'],
+                        tooltip = data['tooltip'],
+                        element = avatar.get_element();
 
-
-            jQuery('.remove').on('click', function () {
-                avatar.remove_from_dom();
-            });
-
-            jQuery('.edit').on('click', function () {
-                panel.on('save', function (ui, attributes) {
-                    avatar.fill(attributes);
-
-                    element.attr('class', attributes.size + ' avatar');
-
-                    jQuery(element).html(
-                        avatar.get_template(false)
-                    );
-
-                    jQuery(element).data('avatar', avatar);
+                $('.remove').on('click', function () {
+                    avatar.remove_from_dom();
                 });
 
-                jQuery('[data-toggle=popover]').popover('hide');
+                $('.edit').on('click', function () {
+                    panel.on('save', function (ui, attributes) {
+                        avatar.fill(attributes);
 
-                panel.open();
-            });
+                        element.attr('class', attributes.size + ' avatar');
+
+                        $(element).html(
+                                avatar.get_template(false)
+                        );
+
+                        $(element).data('avatar', avatar);
+                    });
+
+                    $('[data-toggle=popover]').popover('hide');
+
+                    panel.open();
+                });
+            })(jQuery)
         </script>
     </div>
 </div>
