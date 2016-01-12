@@ -2,7 +2,7 @@
 
     var utils = {
 
-        DEBUGG: true,
+        DEBUGG: false,
 
         decorate_item: function (element) {
             return '<div class="col-md-12 avatar" data-toggle="popover">' + element + '</div>';
@@ -13,6 +13,14 @@
                 console.log(message);
 
             return utils;
+        },
+
+        get_static_attributes: function(name, html) {
+            if( parser.hasOwnProperty(name) && typeof parser[name] == 'function' ) {
+                return parser[name](html)
+            } else {
+                return $(html).getAttributes();
+            }
         }
     };
 
@@ -56,22 +64,94 @@
             return this;
         },
 
-        get_panel: function (panel_name) {
-            return _.get(this.panels, panel_name, '');
+        get_panel: function (panel_name, attributes) {
+            var template = _.get(this.panels, panel_name, '');
+
+            if( attributes ) {
+                var tpl = _.template(_.unescape(template));
+
+                attributes = _.merge(
+                    $(template).data(),
+                    attributes
+                );
+
+                utils.debug('Loaded Attributes ->');
+                utils.debug(attributes);
+
+                template = tpl(attributes);
+            }
+
+            return template;
         },
 
-        get_template: function (template) {
-            return _.get(this.templates, template, '');
+        get_template: function (template_name, attributes, with_static) {
+            if(! attributes)
+                attributes = {};
+
+            var template = _.get(this.templates, template_name, '');
+
+            var tpl = _.template(_.unescape(template));
+
+            var panel = view.get_panel(
+                _.get(attributes, 'panel', 'general')
+            );
+
+            var pAttr = {};
+            if( with_static ) {
+                pAttr = _.merge(
+                    pAttr,
+                    utils.get_static_attributes(template_name, $(template))
+                );
+            }
+
+            pAttr = _.merge(pAttr, $(panel).data());
+            attributes = _.merge(pAttr, attributes);
+
+            template = tpl(attributes);
+
+            utils.debug('Loaded Attributes ->');
+            utils.debug(attributes);
+
+            return template;
         },
 
-        get_popover: function (popover) {
-            return _.get(this.popovers, popover, '');
+        get_popover: function (popover, attributes) {
+            var template = _.get(this.popovers, popover, '');
+
+            if( attributes ) {
+                var tpl = _.template(_.unescape(template));
+
+                attributes = _.merge(attributes, $(template).data());
+
+                utils.debug('Loaded Attributes ->');
+                utils.debug(attributes);
+
+                template = tpl(attributes);
+            }
+
+            return template;
+        }
+
+    };
+
+    var parser = {
+        text: function(el) {
+            var attributes = $(el).getAttributes();
+
+            return attributes;
+        },
+        button: function(el) {
+            var attributes = $(el).getAttributes();
+
+            return attributes;
         }
     };
 
     var Panel = function (avatar, options) {
 
         var self = this;
+
+        self.unique = new Date();
 
         self.avatar = avatar;
 
@@ -83,8 +163,8 @@
 
         var layout = '<div class="' + self.panel_class + '">%template%<div><p class="cancel">cancel</p><p class="save">save</p></div></div>';
 
-        if (_.has(self.options, 'properties.layout'))
-            layout = _.get(self.options, 'properties.layout')
+        if ( _.has(self.options, 'properties.layout'))
+            layout = _.get(self.options, 'properties.layout');
 
         self.set_layout = function (layout) {
             self.layout = layout;
@@ -98,11 +178,12 @@
 
         self.set_layout(layout);
 
+
         self.open = function (parent) {
             if (self.is_opened())
                 self.close();
 
-            var template = self.get_template(),
+            var template = self.get_template(false),
                 parent = parent ? parent : (_.get(self.options, 'properties.parent', $('body')));
 
             var full_template = self.get_layout().replace('%template%', template);
@@ -160,9 +241,21 @@
             return self.avatar;
         };
 
-        self.get_template = function () {
-            return self.get_avatar()
-                .get_panel_template(false);
+        self.get_template = function (clean) {
+            var avatar = self.get_avatar();
+
+            var el_attributes = {};
+
+            if( ! clean ) {
+                var template_name = _.get(avatar.attributes, 'type', 'text');
+                var template_html = avatar.get_template(true, false);
+
+                el_attributes = utils.get_static_attributes(template_name, template_html);
+            }
+
+            return view.get_panel(
+                _.get(avatar.attributes, 'panel', 'general'), _.merge(el_attributes, avatar.attributes)
+            );
         };
     };
 
@@ -204,44 +297,10 @@
             return self;
         };
 
-        self.get_template = function (clean) {
-            var template = view.get_template(
-                _.get(self.attributes, 'type', 'text')
+        self.get_template = function (clean, with_static) {
+            return view.get_template(
+                _.get(self.attributes, 'type', 'text'),  (! clean) ? self.attributes : {}, with_static
             );
-
-            if (!clean) {
-                var tpl = _.template(_.unescape(template));
-
-                var panel = self.get_panel_template(true),
-                    panel_attributes = $(panel).data();
-
-                var attributes = _.merge(panel_attributes, _.get(self, 'attributes', {}));
-
-                template = tpl(attributes);
-            }
-
-            return template;
-        };
-
-        self.get_panel_template = function (clean) {
-            var panel = view.get_panel(
-                _.get(self.attributes, 'panel', 'general')
-            );
-
-            if (!clean) {
-                var tpl = _.template(_.unescape(panel));
-
-                var attributes = $(panel).data();
-
-                utils.debug('Loaded Attributes ->');
-                utils.debug(attributes);
-
-                attributes = _.merge(attributes, self.attributes);
-
-                panel = tpl(attributes);
-            }
-
-            return panel;
         };
 
         self.get_element = function() {
@@ -331,13 +390,11 @@
                 container.droppable({
                     accept: elements,
                     drop: function (event, ui) {
-                        var avatar = self.add_avatar(
-                            $(ui.draggable).clone()
+                        var html = view.get_template(
+                            $(ui.draggable).data('type'), {}, true
                         );
 
-                        var element = $(utils.decorate_item(
-                            avatar.get_template(false))
-                        );
+                        html = $(utils.decorate_item(html));
 
                         if (! container.find('.row').length) {
                             container.append('<div class="row " ' + self.sortable_class + '></div>');
@@ -349,17 +406,17 @@
 
                         var row = container.find('div.row');
 
-                        row.append(element);
+                        row.append(html);
 
-                        avatar.element = element;
+                        var avatar = self.add_avatar(html);
 
-                        element.data('avatar', avatar);
+                        html.data('avatar', avatar);
 
                         avatar.get_panel().close();
 
                         avatar.init();
 
-                        element.trigger('click')
+                        html.trigger('click')
                     }
                 });
             });
@@ -429,6 +486,18 @@
         } else {
             $.error('Invalid method ' + method + ' for jQuery.builder');
         }
+    };
+
+    $.fn.getAttributes = function() {
+        var attributes = {};
+
+        if( this.length ) {
+            $.each( this[0].attributes, function( index, attr ) {
+                attributes[ attr.name ] = attr.value;
+            } );
+        }
+
+        return attributes;
     };
 
 })(jQuery);

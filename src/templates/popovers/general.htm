@@ -25,9 +25,10 @@
                         avatar.fill(attributes);
 
                         element.attr('class', attributes.size + ' avatar');
+                        element.attr('style', attributes.style)
 
                         $(element).html(
-                                avatar.get_template(false)
+                            avatar.get_template(false, false)
                         );
 
                         $(element).data('avatar', avatar);
