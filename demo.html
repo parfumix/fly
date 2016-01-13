@@ -87,8 +87,8 @@
         <li data-type="select" data-container="c2">select</li>
         <hr>
 
-        <li data-type="headline" data-tooltip="editor" data-container="c1">headline</li>
-        <li data-type="paragraph" data-tooltip="editor" data-container="c1">paragraph</li>
+        <li data-type="headline" data-editor="medium" data-container="c1">headline</li>
+        <li data-type="paragraph" data-editor="medium" data-container="c1">paragraph</li>
         <li data-type="button" data-container="c1">button</li>
     </ul>
 </div>
@@ -125,35 +125,22 @@
         $('.elements > li').builder({
             editors: {
                 tooltip: {
-                    init: function(el, layout) {
-                        var tooltip = {
-                            enabled: true,
-                            trigger: 'click',
-                            html: true,
-                            placement: 'top',
-                            container: 'body'
-                        };
+                    init: function(el, layout, options) {
+                        options.content = $(layout);
 
-                        tooltip.content = $(layout);
-
-                        tooltip.content.find('.root').data({
+                        options.content.find('.root').data({
                             avatar: el
                         });
 
-                        $(el.element).popover(tooltip)
+                        $(el.element).popover(options)
                             .on('show.bs.popover', function () {
                                 $('[data-toggle=popover]').not( $(el.element) ).popover('hide');
                         });
                     }
                 },
-                editor: {
-                    init: function(avatar, layout) {
-                        var editor = new MediumEditor(avatar.element, {
-                            disableEditing: false,
-                            toolbar: {
-                                buttons: ['bold', 'italic', 'underline', 'h2', 'h3'],
-                            }
-                        });
+                medium: {
+                    init: function(avatar, layout, options) {
+                        var editor = new MediumEditor(avatar.element, options);
 
                         editor.subscribe('editableInput', function (event, editable) {
 
