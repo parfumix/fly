@@ -1,4 +1,4 @@
-<div class="panel" data-id="general" data-size="col-md-12">
+<div class="panel" data-id="general" data-size="col-md-12" data-style="">
 
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
@@ -10,46 +10,123 @@
     <!-- Tab panes -->
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="general">
-            <input type="text" name="name" value="<%=name%>">
-            <input type="text" name="placeholder" value='<%=placeholder%>'>
+
+            <% if (typeof(name) !== "undefined") { %>
+                <input type="text" name="name" value='<%=name%>'>
+            <% } %>
+
+            <% if (typeof(text) !== "undefined") { %>
+                <input type="text" name="text" value='<%=text%>'>
+            <% } %>
+
+            <% if (typeof(placeholder) !== "undefined") { %>
+                <input type="text" name="placeholder" value='<%=placeholder%>'>
+            <% } %>
+
+            <% if (typeof(options) !== "undefined") { %>
+                <br />
+                Options
+                <br />
+
+                <script type="text/javascript">
+                    (function($) {
+                        $(function() {
+                            $(document).on('click', 'options.remove', function() {
+                                if( $(this).closest('.options').find('li').length > 1 )
+                                    $(this).closest('li').remove()
+                            });
+
+                            $('.add_new_option').on('click', function(e, v) {
+                                var value = !v ? '' : v.value;
+
+                                var checked = '';
+                                if(_.get(v, 'checked', 'false') == 'true' )
+                                    checked = 'checked';
+
+                                var i = $('.options li').length;
+
+                                var template = '<li style="list-style-type: none">' +
+                                            '<input type="hidden" name="checked" value="false">' +
+                                            '<input type="radio" class="is_checked" name="checked" value="'+_.get(v, 'checked', 'false')+'" '+checked+'>' +
+
+                                            '<input type="text" name="options['+i+'][name]" value="'+ value+'">' +
+
+                                            '<a href="#" class="option_rm">remove</a>' +
+                                        '</li>';
+
+                                $('.options').append(template);
+
+                                return false;
+                            });
+
+                            $('.options').on('click','.is_checked', function() {
+                                if( $(this).is(':checked') ) {
+                                    $(this).val('true')
+                                } else {
+                                    $(this).val('false')
+                                }
+                            })
+                        })
+                    })(jQuery)
+                </script>
+
+                <div class="options">
+                    <% _.forEach(options, function(option, k) { %>
+                        <li style="list-style-type: none">
+                            <input type="hidden" name="checked" value="false">
+                            <input type="radio" class="is_checked" name="checked">
+                            <input type="text" name="options[][name]" value="<%=option.value%>">
+                            <a href="#" class="remove">remove</a>
+                        </li>
+                    <% }); %>
+
+                    <a href="#" class="add_new_option">add new</a>
+                </div>
+
+            <% } %>
         </div>
         <div role="tabpanel" class="tab-pane" id="validation">
             <br/>
             <br/>
 
-            <input type="hidden" name="required" value="false">
-            Required <input type="checkbox" name="required" value="<%=required%>">
+            <% if (typeof(required) !== "undefined") { %>
+                <input type="hidden" name="required" value="false">
+                Required <input type="checkbox" name="required" value="<%=required%>">
 
-            <script>
-                jQuery('input[name=required]').on('click', function(e) {
-                    if(! jQuery(this).is(':checked')) {
-                        jQuery(this).val('false')
-                    } else {
-                        jQuery(this).val('true')
-                    }
-                });
+                <script>
+                    (function($) {
+                        $('input[name=required]').on('click', function(e) {
+                            if(! $(this).is(':checked')) {
+                                $(this).val('false')
+                            } else {
+                                $(this).val('true')
+                            }
+                        });
 
-                jQuery('input[name=required]').prop('checked', <%=required%>);
-            </script>
+                        $('input[name=required]').prop('checked', <%=required%>);
+                    })(jQuery)
+                </script>
+            <% } %>
 
         </div>
         <div role="tabpanel" class="tab-pane" id="style">
-            <textarea name="style"><%=style%></textarea>
+            <% if (typeof(style) !== "undefined") { %>
+                <textarea name="style"><%=style%></textarea>
+            <% } %>
 
-            <br/>
-            <br/>
-            Size
-            <select name="size" class="size">
-                <option value="col-md-3">Small</option>
-                <option value="col-md-6">Medium</option>
-                <option value="col-md-12">Large</option>
-            </select>
-            <br/>
-            <br/>
-            <script>
-                jQuery('select.size').val('<%=size%>');
-            </script>
-
+            <% if (typeof(size) !== "undefined") { %>
+                <br/>
+                <br/>
+                Size
+                <select name="size" class="size">
+                    <option value="col-md-3">Small</option>
+                    <option value="col-md-6">Medium</option>
+                    <option value="col-md-12">Large</option>
+                </select>
+                <script>
+                    jQuery('select.size').val('<%=size%>');
+                </script>
+            <% } %>
         </div>
     </div>
 </div>
