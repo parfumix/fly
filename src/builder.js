@@ -166,6 +166,7 @@
 
             return attributes;
         },
+
         radio: function(el) {
             var attributes = this.checkbox(el);
 
@@ -311,21 +312,13 @@
         self.panel = false;
 
         self.init = function() {
-            var tooltip = _.get(self.options, 'tooltip');
+            var editor = _.get(
+                    self.options['editors'],
+                    _.get(self.data, 'editor', 'tooltip')
+                ),
+                popover = self.get_popover();
 
-            if( self.get_popover() ) {
-                tooltip.content = $(self.get_popover());
-
-                tooltip.content.find('.root').data({
-                    avatar: self,
-                    panel : self.get_panel()
-                });
-            }
-
-            $(self.element).popover(tooltip)
-                .on('show.bs.popover', function () {
-                    $('[data-toggle=popover]').not( $(self.element) ).popover('hide');
-                });
+            editor.init(self, popover, editor);
         };
 
 
@@ -396,13 +389,21 @@
 
         self.options = _.defaultsDeep(arguments, {
             elements: {},
-            tooltip: {
-                enabled: true,
-                trigger: 'click',
-                content: '<span class="edit">edit</span>',
-                html: true,
-                placement: 'top',
-                container: 'body'
+            editors: {
+                tooltip: {
+                    enabled: true,
+                    trigger: 'click',
+                    content: '<span class="edit">edit</span>',
+                    html: true,
+                    placement: 'top',
+                    container: 'body'
+                },
+                medium: {
+                    disableEditing: false,
+                    toolbar: {
+                        buttons: ['bold', 'italic', 'underline', 'h2', 'h3'],
+                    }
+                }
             }
         });
 
