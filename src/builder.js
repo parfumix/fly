@@ -401,7 +401,7 @@
                 medium: {
                     disableEditing: false,
                     toolbar: {
-                        buttons: ['bold', 'italic', 'underline', 'h2', 'h3'],
+                        buttons: ['bold', 'italic', 'underline', 'h2', 'h3']
                     }
                 }
             }
@@ -436,9 +436,9 @@
                     cursor: "move"
                 });
 
-                container.find('.row').sortable({
+                /*container.find('.row').sortable({
                     revert: 10
-                }).disableSelection();
+                }).disableSelection();*/
 
                 self.init_from_html(container);
 

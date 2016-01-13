@@ -64,10 +64,8 @@
             right: 0;
             top: 0;
             bottom: 0;
-            content:"";
+            /*content:"";*/
         }
-
-
     </style>
 </head>
 
@@ -140,12 +138,25 @@
                 },
                 medium: {
                     init: function(avatar, layout, options) {
-                        var editor = new MediumEditor(avatar.element, options);
+                        options.toolbar = {
+                            buttons: ['bold', 'italic', 'underline', 'removeFormat']
+                        };
+
+                        options.anchorPreview = false;
+
+                        var editor = new MediumEditor(avatar.children, options);
 
                         editor.subscribe('editableInput', function (event, editable) {
+                            var text = $(editable).text();
 
+                            avatar.fillAttributes({
+                                text: text
+                            });
                         });
 
+                        editor.subscribe('showToolbar', function (event, editable) {
+                            console.log(arguments)
+                        });
                     }
                 }
             }
