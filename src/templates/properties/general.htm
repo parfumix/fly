@@ -31,28 +31,17 @@
                 <script type="text/javascript">
                     (function($) {
                         $(function() {
-                            $(document).on('click', 'options.remove', function() {
+                            $(document).on('click', 'div.options .remove', function() {
                                 if( $(this).closest('.options').find('li').length > 1 )
-                                    $(this).closest('li').remove()
+                                    $(this).closest('li').remove();
+
+                                return false;
                             });
 
                             $('.add_new_option').on('click', function(e, v) {
-                                var value = !v ? '' : v.value;
-
-                                var checked = '';
-                                if(_.get(v, 'checked', 'false') == 'true' )
-                                    checked = 'checked';
-
-                                var i = $('.options li').length;
-
-                                var template = '<li style="list-style-type: none">' +
-                                            '<input type="hidden" name="checked" value="false">' +
-                                            '<input type="radio" class="is_checked" name="checked" value="'+_.get(v, 'checked', 'false')+'" '+checked+'>' +
-
-                                            '<input type="text" name="options['+i+'][name]" value="'+ value+'">' +
-
-                                            '<a href="#" class="option_rm">remove</a>' +
-                                        '</li>';
+                                var template = $('.options li:last').clone();
+                                template.find('input[type=text]').val('');
+                                template.find('.is_checked').prop('checked', false).removeAttr('checked');
 
                                 $('.options').append(template);
 
@@ -75,13 +64,14 @@
                         <li style="list-style-type: none">
                             <input type="hidden" name="checked" value="false">
                             <input type="radio" class="is_checked" name="checked">
-                            <input type="text" name="options[][name]" value="<%=option.value%>">
+
+                            <input type="text" name="options[][value]" value="<%=option.value%>">
                             <a href="#" class="remove">remove</a>
                         </li>
                     <% }); %>
-
-                    <a href="#" class="add_new_option">add new</a>
                 </div>
+
+                <a href="#" class="add_new_option">add new</a>
 
             <% } %>
         </div>

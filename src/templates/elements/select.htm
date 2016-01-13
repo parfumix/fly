@@ -1,20 +1,11 @@
 <div class="template" data-id="select">
-    <span class="temp"></span>
+    <div>
+        <label>My group</label><br/>
 
-    <select style="width: 100%">
-        <% items.forEach(function(v) { %>
-            <option><%=v.name%></option>
-        <% }); %>
-    </select>
-
-    <script type="text/javascript">
-        var label = '<%=label%>';
-        var description = '<%=description%>';
-
-        if(description)
-            jQuery('.temp').after('<p>'+description+'</p>');
-
-        if(label)
-            jQuery('.temp').after('<label>'+label+'</label>');
-    </script>
+        <select style="width: 100%" name="select">
+            <option selected value="value-1">Value 1</option>
+            <option value="value-2">Value 2</option>
+            <option value="value-3">Value 3</option>
+        </select>
+    </div>
 </div>

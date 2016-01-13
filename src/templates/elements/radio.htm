@@ -1,18 +1,9 @@
 <div class="template" data-id="radio">
-    <span class="temp"></span>
+    <div>
+        <label>My group</label><br />
 
-    <% items.forEach(function(v) { %>
-        <input type="radio" class="form-control" name="<%=name%>[]" checked="<%=v.checked%>" value="<%=v.name%>"><%=v.name%>
-    <% }); %>
-
-    <script type="text/javascript">
-        var label = '<%=label%>';
-        var description = '<%=description%>';
-
-        if(description)
-            jQuery('.temp').after('<p>'+description+'</p>');
-
-        if(label)
-            jQuery('.temp').after('<label>'+label+'</label>');
-    </script>
+        <input type="radio" name="radio_group[]" value="value1" checked="checked" /> Value 1<br />
+        <input type="radio" name="radio_group[]" value="value2" /> Value 2<br />
+        <input type="radio" name="radio_group[]" value="value3" /> Value 3<br />
+    </div>
 </div>
