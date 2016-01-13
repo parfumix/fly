@@ -24,6 +24,10 @@
 
     <script type="text/javascript" src="bower_components/jquery-serialize-object/dist/jquery.serialize-object.min.js"></script>
 
+    <script src="bower_components/medium-editor/dist/js/medium-editor.js"></script>
+    <link rel="stylesheet" href="bower_components/medium-editor/dist/css/medium-editor.css">
+    <link rel="stylesheet" href="bower_components/medium-editor/dist/css/themes/default.css">
+
     <script type="text/javascript" src="src/builder.js"></script>
 
     <style type="text/css">
@@ -46,10 +50,6 @@
             text-indent: -999em;
         }
 
-        .popover {
-            z-index: 160000;
-        }
-
         .avatar {
             position: relative;
         }
@@ -66,6 +66,8 @@
             bottom: 0;
             content:"";
         }
+
+
     </style>
 </head>
 
@@ -85,8 +87,8 @@
         <li data-type="select" data-container="c2">select</li>
         <hr>
 
-        <li data-type="headline" data-container="c1">headline</li>
-        <li data-type="paragraph" data-container="c1">paragraph</li>
+        <li data-type="headline" data-tooltip="editor" data-container="c1">headline</li>
+        <li data-type="paragraph" data-tooltip="editor" data-container="c1">paragraph</li>
         <li data-type="button" data-container="c1">button</li>
     </ul>
 </div>
@@ -114,10 +116,51 @@
 -->
 
 <script type="text/javascript">
+
+    /**
+     * Here we need to know how to run editor extensions
+     *
+     */
     $(function () {
         $('.elements > li').builder({
-            tooltip: {
-                enabled: true
+            editors: {
+                tooltip: {
+                    init: function(el, layout) {
+                        var tooltip = {
+                            enabled: true,
+                            trigger: 'click',
+                            html: true,
+                            placement: 'top',
+                            container: 'body'
+                        };
+
+                        tooltip.content = $(layout);
+
+                        tooltip.content.find('.root').data({
+                            avatar: el
+                        });
+
+                        $(el.element).popover(tooltip)
+                            .on('show.bs.popover', function () {
+                                $('[data-toggle=popover]').not( $(el.element) ).popover('hide');
+                        });
+                    }
+                },
+                editor: {
+                    init: function(avatar, layout) {
+                        var editor = new MediumEditor(avatar.element, {
+                            disableEditing: false,
+                            toolbar: {
+                                buttons: ['bold', 'italic', 'underline', 'h2', 'h3'],
+                            }
+                        });
+
+                        editor.subscribe('editableInput', function (event, editable) {
+
+                        });
+
+                    }
+                }
             }
         });
     });
