@@ -150,6 +150,35 @@
             attributes['options'] = options;
 
             return attributes;
+        },
+
+        select: function(el) {
+            var attributes = this.checkbox(el);
+
+            attributes['name'] = $(el).find('select').attr('name');
+
+            var options = [];
+            $(el).find('select option').each(function(k, v) {
+                options[k] = $(v).getAttributes()
+            });
+
+            attributes['options'] = options;
+
+            return attributes;
+        },
+        radio: function(el) {
+            var attributes = this.checkbox(el);
+
+            attributes['name'] = $(el).find('input[type=radio]').attr('name');
+
+            var options = [];
+            $(el).find('input[type=radio]').each(function(k, v) {
+                options[k] = $(v).getAttributes()
+            });
+
+            attributes['options'] = options;
+
+            return attributes;
         }
     };
 
