@@ -1,9 +1,8 @@
-<div class="panel" data-id="text" data-headline="Headline" data-style="" data-size="col-md-12">
+<div class="panel" data-id="button" data-size="col-md-12" data-style="">
 
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a>
-        </li>
+        <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a></li>
         <li role="presentation"><a href="#style" aria-controls="style" role="tab" data-toggle="tab">Style</a></li>
     </ul>
 
@@ -13,7 +12,7 @@
             <input type="text" name="text" value="<%=text%>">
         </div>
         <div role="tabpanel" class="tab-pane" id="style">
-            <input type="text" name="css_style" value="<%=style%>">
+            <textarea name="style"><%=style%></textarea>
 
             <br/>
             <br/>

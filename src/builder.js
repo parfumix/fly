@@ -2,7 +2,7 @@
 
     var utils = {
 
-        DEBUGG: false,
+        DEBUGG: true,
 
         decorate_item: function (element) {
             return '<div class="col-md-12 avatar" data-toggle="popover">' + element + '</div>';
@@ -13,14 +13,6 @@
                 console.log(message);
 
             return utils;
-        },
-
-        get_static_attributes: function(name, html) {
-            if( parser.hasOwnProperty(name) && typeof parser[name] == 'function' ) {
-                return parser[name](html)
-            } else {
-                return $(html).getAttributes();
-            }
         }
     };
 
@@ -84,33 +76,19 @@
             return template;
         },
 
-        get_template: function (template_name, attributes, with_static) {
-            if(! attributes)
-                attributes = {};
-
+        get_template: function (template_name, attributes) {
             var template = _.get(this.templates, template_name, '');
 
-            var tpl = _.template(_.unescape(template));
+            if( attributes ) {
+                //todo temporary ..
+                template = $('<div>'+template+'</div>');
 
-            var panel = view.get_panel(
-                _.get(attributes, 'panel', 'general')
-            );
+                _.each(attributes, function(v, k) {
+                    template.children().attr(k, v)
+                });
 
-            var pAttr = {};
-            if( with_static ) {
-                pAttr = _.merge(
-                    pAttr,
-                    utils.get_static_attributes(template_name, $(template))
-                );
+                template = template.html();
             }
-
-            pAttr = _.merge(pAttr, $(panel).data());
-            attributes = _.merge(pAttr, attributes);
-
-            template = tpl(attributes);
-
-            utils.debug('Loaded Attributes ->');
-            utils.debug(attributes);
 
             return template;
         },
@@ -142,6 +120,8 @@
         },
         button: function(el) {
             var attributes = $(el).getAttributes();
+
+            attributes['text'] = $(el).text();
 
             return attributes;
         }
@@ -243,23 +223,17 @@
 
         self.get_template = function (clean) {
             var avatar = self.get_avatar();
-
-            var el_attributes = {};
-
-            if( ! clean ) {
-                var template_name = _.get(avatar.attributes, 'type', 'text');
-                var template_html = avatar.get_template(true, false);
-
-                el_attributes = utils.get_static_attributes(template_name, template_html);
-            }
+            var data = avatar.data;
+            var attributes = avatar.getAttributes();
 
             return view.get_panel(
-                _.get(avatar.attributes, 'panel', 'general'), _.merge(el_attributes, avatar.attributes)
+                _.get(data, 'panel', 'general'), (! clean) ? attributes : {}
             );
         };
     };
 
-    var Avatar = function (element, options) {
+    // so we can initialize our avatar element with custom attributes, they will be primary, and scan for element attributes.
+    var Avatar = function (element, data, options) {
 
         var self = this;
 
@@ -267,7 +241,18 @@
 
         self.element = element;
         self.options = options;
-        self.attributes = $(element).data();
+
+        self.children = $(element).children();
+
+        self.data       = data;
+
+        if( parser.hasOwnProperty(data['type']) && ( typeof parser[data['type']] == 'function' ) ) {
+            var function_name = data['type'];
+
+            self.attributes = parser[function_name](self.children)
+        } else {
+            self.attributes = self.children.getAttributes();
+        }
 
         self.panel = false;
 
@@ -283,33 +268,39 @@
                 });
             }
 
-            self.get_element().popover(tooltip)
+            $(self.element).popover(tooltip)
                 .on('show.bs.popover', function () {
                     $('[data-toggle=popover]').not( $(self.element) ).popover('hide');
                 });
         };
 
-        self.fill = function (attributes) {
+
+        self.fillAttributes = function (attributes) {
             _.each(attributes, function (v, k) {
                 self.attributes[k] = v;
             });
 
+            $(self.element).data('avatar', self);
+
             return self;
         };
 
-        self.get_template = function (clean, with_static) {
-            return view.get_template(
-                _.get(self.attributes, 'type', 'text'),  (! clean) ? self.attributes : {}, with_static
-            );
+        self.getAttributes = function() {
+            return self.attributes;
         };
 
-        self.get_element = function() {
-            return $(self.element);
+
+        self.get_template = function () {
+            var attributes = self.getAttributes();
+
+            return view.get_template(
+                _.get(self.data, 'type', 'text'), attributes
+            );
         };
 
         self.get_popover = function() {
             var popover = view.get_popover(
-                _.get(self.attributes, 'popover', 'general')
+                _.get(self.data, 'popover', 'general')
             );
 
             return popover;
@@ -323,8 +314,17 @@
             return self.panel;
         };
 
-        self.remove_from_dom = function() {
-            self.get_element().remove();
+
+        self.remove = function() {
+            $(self.element).remove();
+
+            return self;
+        };
+
+        self.render = function() {
+            $(self.element).html(
+                self.get_template()
+            );
 
             return self;
         }
@@ -391,7 +391,7 @@
                     accept: elements,
                     drop: function (event, ui) {
                         var html = view.get_template(
-                            $(ui.draggable).data('type'), {}, true
+                            $(ui.draggable).data('type')
                         );
 
                         html = $(utils.decorate_item(html));
@@ -408,7 +408,10 @@
 
                         row.append(html);
 
-                        var avatar = self.add_avatar(html);
+                        var avatar = self.add_avatar(
+                            html,
+                            $(ui.draggable).data()
+                        );
 
                         html.data('avatar', avatar);
 
@@ -424,7 +427,10 @@
 
         self.init_from_html = function(container) {
            $(container).find('.avatar').each(function () {
-                var avatar = self.add_avatar(this);
+                var avatar = self.add_avatar(
+                    this,
+                    $(this).data()
+                );
 
                 $(this).data('avatar', avatar);
 
@@ -440,12 +446,12 @@
             return self;
         };
 
-        self.add_avatar = function (av) {
-            var avatar = new Avatar(av, self.options);
+        self.add_avatar = function (avatar, data) {
+            var av = new Avatar(avatar, data, self.options);
 
-            self.avatars.push(avatar);
+            self.avatars.push(av);
 
-            return avatar;
+            return av;
         };
 
         self.get_container = function() {

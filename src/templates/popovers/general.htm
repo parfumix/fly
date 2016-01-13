@@ -11,27 +11,23 @@
                         avatar = data['avatar'],
                         panel = data['panel'],
                         tooltip = data['tooltip'],
-                        element = avatar.get_element();
+                        element = avatar.element;
 
                 $('.remove').on('click', function () {
                     var popover = $(this).closest('.popover').data('bs.popover');
 
                     popover.destroy();
-                    avatar.remove_from_dom();
+                    avatar.remove();
                 });
 
                 $('.edit').on('click', function () {
+
                     panel.on('save', function (ui, attributes) {
-                        avatar.fill(attributes);
+                        avatar.fillAttributes(attributes);
 
-                        element.attr('class', attributes.size + ' avatar');
-                        element.attr('style', attributes.style)
+                        $(element).attr('class', attributes.size + ' avatar');
 
-                        $(element).html(
-                            avatar.get_template(false, false)
-                        );
-
-                        $(element).data('avatar', avatar);
+                        avatar.render();
                     });
 
                     $('[data-toggle=popover]').popover('hide');
