@@ -118,10 +118,36 @@
 
             return attributes;
         },
-        button: function(el) {
+
+        headline: function(el) {
             var attributes = $(el).getAttributes();
 
             attributes['text'] = $(el).text();
+
+            return attributes;
+        },
+
+        paragraph: function(el) {
+            return this.headline(el);
+        },
+
+        button: function(el) {
+           return this.headline(el);
+        },
+
+        checkbox: function(el) {
+            var attributes = $(el).getAttributes();
+
+            attributes['text'] = $(el).find('label').text();
+
+            attributes['name'] = $(el).find('input[type=checkbox]').attr('name');
+
+            var options = [];
+            $(el).find('input[type=checkbox]').each(function(k, v) {
+                options[k] = $(v).getAttributes()
+            });
+
+            attributes['options'] = options;
 
             return attributes;
         }
@@ -232,7 +258,6 @@
         };
     };
 
-    // so we can initialize our avatar element with custom attributes, they will be primary, and scan for element attributes.
     var Avatar = function (element, data, options) {
 
         var self = this;
