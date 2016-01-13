@@ -9,8 +9,7 @@
             (function($) {
                 var data = $('.root').data(),
                         avatar = data['avatar'],
-                        panel = data['panel'],
-                        tooltip = data['tooltip'],
+                        panel = avatar.get_panel(),
                         element = avatar.element;
 
                 $('.remove').on('click', function () {
