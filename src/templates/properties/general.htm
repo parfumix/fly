@@ -11,7 +11,7 @@
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="general">
 
-            <% if (typeof(name) !== "undefined") { %>
+            <% if (typeof(name) !== "undefined" && name !== "") { %>
                 <input type="text" name="name" value='<%=name%>'>
             <% } %>
 

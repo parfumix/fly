@@ -64,7 +64,7 @@
             right: 0;
             top: 0;
             bottom: 0;
-            /*content:"";*/
+            content:"";
         }
     </style>
 </head>
@@ -85,8 +85,8 @@
         <li data-type="select" data-container="c2">select</li>
         <hr>
 
-        <li data-type="headline" data-editor="medium" data-container="c1">headline</li>
-        <li data-type="paragraph" data-editor="medium" data-container="c1">paragraph</li>
+        <li data-type="headline" data-container="c1">headline</li>
+        <li data-type="paragraph" data-container="c1">paragraph</li>
         <li data-type="button" data-container="c1">button</li>
     </ul>
 </div>
@@ -142,9 +142,10 @@
                             buttons: ['bold', 'italic', 'underline', 'removeFormat']
                         };
 
-                        options.anchorPreview = false;
-
-                        var editor = new MediumEditor(avatar.children, options);
+                        var editor = new MediumEditor(
+                            avatar.children,
+                            options
+                        );
 
                         editor.subscribe('editableInput', function (event, editable) {
                             var text = $(editable).text();
@@ -152,10 +153,6 @@
                             avatar.fillAttributes({
                                 text: text
                             });
-                        });
-
-                        editor.subscribe('showToolbar', function (event, editable) {
-                            console.log(arguments)
                         });
                     }
                 }
