@@ -1,3 +1,5 @@
+_u = _.noConflict();
+
 (function ($) {
 
     var utils = {
@@ -30,7 +32,7 @@
             attributes: function (template, attributes) {
                 template = $(template);
 
-                _.each(attributes, function (v, k) {
+                _u.each(attributes, function (v, k) {
                     template.attr(k, v)
                 });
 
@@ -45,7 +47,7 @@
                 template = $(template);
 
                 template.text(
-                    _.get(attributes, 'text')
+                    _u.get(attributes, 'text')
                 );
 
                 return template.outerHTML();
@@ -56,7 +58,7 @@
                 template = $(template);
 
                 template.text(
-                    _.get(attributes, 'text')
+                    _u.get(attributes, 'text')
                 );
 
                 return template.outerHTML();
@@ -67,7 +69,7 @@
                 template = $(template);
 
                 template.text(
-                    _.get(attributes, 'text')
+                    _u.get(attributes, 'text')
                 );
 
                 return template.outerHTML();
@@ -77,15 +79,15 @@
                 template = $(template);
 
                 template.find('label').text(
-                    _.get(attributes, 'text')
+                    _u.get(attributes, 'text')
                 );
 
-                if(_.has(attributes, 'options')) {
-                    var options = _.get(attributes, 'options');
+                if(_u.has(attributes, 'options')) {
+                    var options = _u.get(attributes, 'options');
 
                     template.find('div.checkboxes').html('');
 
-                    _.each(options, function(v) {
+                    _u.each(options, function(v) {
                         template.find('div.checkboxes').append('<input type="checkbox" name="'+attributes.name+'" value="'+v.value+'" checked="checked" />'+v.value+'<br />')
                     });
                 }
@@ -97,15 +99,15 @@
                 template = $(template);
 
                 template.find('label').text(
-                    _.get(attributes, 'text')
+                    _u.get(attributes, 'text')
                 );
 
-                if(_.has(attributes, 'options')) {
-                    var options = _.get(attributes, 'options');
+                if(_u.has(attributes, 'options')) {
+                    var options = _u.get(attributes, 'options');
 
                     template.find('div.radio').html('');
 
-                    _.each(options, function(v) {
+                    _u.each(options, function(v) {
                         template.find('div.radio').append('<input type="radio" name="'+attributes.name+'" value="'+v.value+'" checked="checked" />'+v.value+'<br />')
                     });
                 }
@@ -117,16 +119,16 @@
                 template = $(template);
 
                 template.find('label').text(
-                    _.get(attributes, 'text')
+                    _u.get(attributes, 'text')
                 );
 
-                if(_.has(attributes, 'options')) {
-                    var options = _.get(attributes, 'options');
+                if(_u.has(attributes, 'options')) {
+                    var options = _u.get(attributes, 'options');
 
                     template.find('select').html('');
-                    template.find('select').attr('name', _.get(attributes, 'name', 'select'));
+                    template.find('select').attr('name', _u.get(attributes, 'name', 'select'));
 
-                    _.each(options, function(v) {
+                    _u.each(options, function(v) {
                         template.find('select').append('<option value="'+v.value+'">'+v.value+'</option>')
                     });
                 }
@@ -159,19 +161,19 @@
 
                 utils.debug('Loaded html');
 
-                _.isFunction(callback) ? callback.call(view) : false;
+                _u.isFunction(callback) ? callback.call(view) : false;
             });
 
             return this;
         },
 
         get_panel: function (panel_name, attributes) {
-            var template = _.get(this.panels, panel_name, '');
+            var template = _u.get(this.panels, panel_name, '');
 
             if( attributes ) {
-                var tpl = _.template(_.unescape(template));
+                var tpl = _u.template(_u.unescape(template));
 
-                attributes = _.merge(
+                attributes = _u.merge(
                     $(template).data(),
                     attributes
                 );
@@ -186,10 +188,10 @@
         },
 
         get_template: function (template_name, attributes) {
-            var template = _.get(this.templates, template_name, '');
+            var template = _u.get(this.templates, template_name, '');
 
             if( attributes ) {
-                if( _.has(view.renders, template_name) ) {
+                if( _u.has(view.renders, template_name) ) {
                     template = view.renders[template_name](template, attributes)
                 } else {
                     template = view.renders['attributes'](template, attributes)
@@ -200,12 +202,12 @@
         },
 
         get_popover: function (popover, attributes) {
-            var template = _.get(this.popovers, popover, '');
+            var template = _u.get(this.popovers, popover, '');
 
             if( attributes ) {
-                var tpl = _.template(_.unescape(template));
+                var tpl = _u.template(_u.unescape(template));
 
-                attributes = _.merge(attributes, $(template).data());
+                attributes = _u.merge(attributes, $(template).data());
 
                 utils.debug('Loaded Attributes ->');
                 utils.debug(attributes);
@@ -301,12 +303,12 @@
 
         self.events = {};
 
-        self.panel_class = _.get(self.options, 'class', 'properties');
+        self.panel_class = _u.get(self.options, 'class', 'properties');
 
         var layout = '<div class="' + self.panel_class + '">%template%<div><p class="cancel">cancel</p><p class="save">save</p></div></div>';
 
-        if ( _.has(self.options, 'properties.layout'))
-            layout = _.get(self.options, 'properties.layout');
+        if ( _u.has(self.options, 'properties.layout'))
+            layout = _u.get(self.options, 'properties.layout');
 
         self.set_layout = function (layout) {
             self.layout = layout;
@@ -326,7 +328,7 @@
                 self.close();
 
             var template = self.get_template(false),
-                parent = parent ? parent : (_.get(self.options, 'properties.parent', $('body')));
+                parent = parent ? parent : (_u.get(self.options, 'properties.parent', $('body')));
 
             var full_template = self.get_layout().replace('%template%', template);
 
@@ -370,7 +372,7 @@
         };
 
         self.trigger = function (event, attributes) {
-            var callback = _.get(self.events, event, function () {
+            var callback = _u.get(self.events, event, function () {
             });
 
             callback.apply(self, attributes);
@@ -389,7 +391,7 @@
             var attributes = avatar.getAttributes();
 
             return view.get_panel(
-                _.get(data, 'panel', 'general'), (! clean) ? attributes : {}
+                _u.get(data, 'panel', 'general'), (! clean) ? attributes : {}
             );
         };
     };
@@ -418,9 +420,9 @@
         self.panel = false;
 
         self.init = function() {
-            var editor = _.get(
+            var editor = _u.get(
                     self.options['editors'],
-                    _.get(self.data, 'editor', 'tooltip')
+                    _u.get(self.data, 'editor', 'tooltip')
                 ),
                 popover = self.get_popover();
 
@@ -428,7 +430,7 @@
         };
 
         self.fillAttributes = function (attributes) {
-            _.each(attributes, function (v, k) {
+            _u.each(attributes, function (v, k) {
                 self.attributes[k] = v;
             });
 
@@ -446,13 +448,13 @@
             var attributes = self.getAttributes();
 
             return view.get_template(
-                _.get(self.data, 'type', 'text'), attributes
+                _u.get(self.data, 'type', 'text'), attributes
             );
         };
 
         self.get_popover = function() {
             var popover = view.get_popover(
-                _.get(self.data, 'popover', 'general')
+                _u.get(self.data, 'popover', 'general')
             );
 
             return popover;
@@ -492,7 +494,7 @@
 
         self.sortable_class = 'sortable';
 
-        self.options = _.defaultsDeep(arguments, {
+        self.options = _u.defaultsDeep(arguments, {
             elements: {},
             editors: {
                 tooltip: {
@@ -518,8 +520,8 @@
             $(self.elements).each(function() {
                 var selector = $(this).data('container');
 
-                if( _.has(box, selector) ) {
-                    var container = _.get(box, selector);
+                if( _u.has(box, selector) ) {
+                    var container = _u.get(box, selector);
                     container['elements'].push($(this))
                 } else {
                     box[selector] = {
@@ -529,7 +531,7 @@
                 }
             });
 
-            _.each(box, function(v, k) {
+            _u.each(box, function(v, k) {
                 var elements = $('[data-container='+k+']'),
                     container = v.container;
 
@@ -599,7 +601,7 @@
         };
 
         self.add_avatars = function (avs) {
-            _.each(avs, function (avatar) {
+            _u.each(avs, function (avatar) {
                 self.add_avatar(avatar);
             });
 
@@ -626,9 +628,9 @@
 
     var methods = {
         init: function (options) {
-            if(_.has(options, 'template_path') )
+            if(_u.has(options, 'template_path') )
                 view.set_path(
-                    _.get(options, 'template_path')
+                    _u.get(options, 'template_path')
                 );
 
             var self = this;
@@ -643,7 +645,7 @@
     };
 
     $.fn.builder = function (arguments) {
-        var method = _.get(arguments, 'method', 'init');
+        var method = _u.get(arguments, 'method', 'init');
 
         if (methods[method]) {
             return methods[method].call(this, arguments);
