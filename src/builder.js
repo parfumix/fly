@@ -2,7 +2,7 @@
 
     var utils = {
 
-        DEBUGG: true,
+        DEBUGG: false,
 
         decorate_item: function (element) {
             return '<div class="col-md-12 avatar" data-toggle="popover">' + element + '</div>';
@@ -25,6 +25,115 @@
         templates: {},
 
         popovers: {},
+
+        renders: {
+            attributes: function (template, attributes) {
+                template = $(template);
+
+                _.each(attributes, function (v, k) {
+                    template.attr(k, v)
+                });
+
+                utils.debug('Loaded Attributes ->');
+                utils.debug(attributes);
+
+                return template.outerHTML();
+            },
+
+            headline: function (template, attributes) {
+                template = this.attributes(template, attributes);
+                template = $(template);
+
+                template.text(
+                    _.get(attributes, 'text')
+                );
+
+                return template.outerHTML();
+            },
+
+            paragraph: function (template, attributes) {
+                template = this.attributes(template, attributes);
+                template = $(template);
+
+                template.text(
+                    _.get(attributes, 'text')
+                );
+
+                return template.outerHTML();
+            },
+
+            button: function (template, attributes) {
+                template = this.attributes(template, attributes);
+                template = $(template);
+
+                template.text(
+                    _.get(attributes, 'text')
+                );
+
+                return template.outerHTML();
+            },
+
+            checkbox: function (template, attributes) {
+                template = $(template);
+
+                template.find('label').text(
+                    _.get(attributes, 'text')
+                );
+
+                if(_.has(attributes, 'options')) {
+                    var options = _.get(attributes, 'options');
+
+                    template.find('div.checkboxes').html('');
+
+                    _.each(options, function(v) {
+                        template.find('div.checkboxes').append('<input type="checkbox" name="'+attributes.name+'" value="'+v.value+'" checked="checked" />'+v.value+'<br />')
+                    });
+                }
+
+                return template.outerHTML();
+            },
+
+            radio: function (template, attributes) {
+                template = $(template);
+
+                template.find('label').text(
+                    _.get(attributes, 'text')
+                );
+
+                if(_.has(attributes, 'options')) {
+                    var options = _.get(attributes, 'options');
+
+                    template.find('div.radio').html('');
+
+                    _.each(options, function(v) {
+                        template.find('div.radio').append('<input type="radio" name="'+attributes.name+'" value="'+v.value+'" checked="checked" />'+v.value+'<br />')
+                    });
+                }
+
+                return template.outerHTML();
+            },
+
+            select: function (template, attributes) {
+                template = $(template);
+
+                template.find('label').text(
+                    _.get(attributes, 'text')
+                );
+
+                if(_.has(attributes, 'options')) {
+                    var options = _.get(attributes, 'options');
+
+                    template.find('select').html('');
+                    template.find('select').attr('name', _.get(attributes, 'name', 'select'));
+
+                    _.each(options, function(v) {
+                        template.find('select').append('<option value="'+v.value+'">'+v.value+'</option>')
+                    });
+                }
+
+                return template.outerHTML();
+            }
+        },
 
         set_path: function (path) {
             this.templates_path = '/' + path
@@ -80,14 +189,11 @@
             var template = _.get(this.templates, template_name, '');
 
             if( attributes ) {
-                //todo temporary ..
-                template = $('<div>'+template+'</div>');
-
-                _.each(attributes, function(v, k) {
-                    template.children().attr(k, v)
-                });
-
-                template = template.html();
+                if( _.has(view.renders, template_name) ) {
+                    template = view.renders[template_name](template, attributes)
+                } else {
+                    template = view.renders['attributes'](template, attributes)
+                }
             }
 
             return template;
@@ -321,7 +427,6 @@
             editor.init(self, popover, editor);
         };
 
-
         self.fillAttributes = function (attributes) {
             _.each(attributes, function (v, k) {
                 self.attributes[k] = v;
@@ -436,9 +541,9 @@
                     cursor: "move"
                 });
 
-                /*container.find('.row').sortable({
+                container.find('.row').sortable({
                     revert: 10
-                }).disableSelection();*/
+                }).disableSelection();
 
                 self.init_from_html(container);
 
@@ -560,5 +665,29 @@
 
         return attributes;
     };
+
+    if (!$.outerHTML) {
+        $.extend({
+            outerHTML: function(ele) {
+                var $return = undefined;
+                if (ele.length === 1) {
+                    $return = ele[0].outerHTML;
+                }
+                else if (ele.length > 1) {
+                    $return = {};
+                    ele.each(function(i) {
+                        $return[i] = $(this)[0].outerHTML;
+                    })
+                };
+
+                return $return;
+            }
+        });
+        $.fn.extend({
+            outerHTML: function() {
+                return $.outerHTML($(this));
+            }
+        });
+    }
 
 })(jQuery);
