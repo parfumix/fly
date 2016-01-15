@@ -174,8 +174,8 @@ _u = _.noConflict();
                 var tpl = _u.template(_u.unescape(template));
 
                 attributes = _u.merge(
-                    attributes,
-                    $(template).data()
+                    $(template).data(),
+                    attributes
                 );
 
                 utils.debug('Loaded Attributes ->');

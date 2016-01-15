@@ -91,53 +91,53 @@
 
         <div role="tabpanel" class="tab-pane" id="validation">
             <% if (typeof(required) !== "undefined") { %>
-            <div class="row">
-                <div class="col-md-3">
-                    <input type="hidden" name="required" value="false">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="required" value="<%=required%>"> Required
-                        </label>
+                <div class="row">
+                    <div class="col-md-3">
+                        <input type="hidden" name="required" value="false">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="required" value="<%=required%>"> Required
+                            </label>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <script>
-                (function($) {
-                    $('input[name=required]').on('click', function(e) {
-                        if(! $(this).is(':checked')) {
-                            $(this).val('false')
-                        } else {
-                            $(this).val('true')
-                        }
-                    });
+                <script>
+                    (function($) {
+                        $('input[name=required]').on('click', function(e) {
+                            if(! $(this).is(':checked')) {
+                                $(this).val('false')
+                            } else {
+                                $(this).val('true')
+                            }
+                        });
 
-                    $('input[name=required]').prop('checked', <%=required%>);
-                })(jQuery)
-            </script>
+                        $('input[name=required]').prop('checked', <%=required%>);
+                    })(jQuery)
+                </script>
             <% } %>
         </div>
 
         <div role="tabpanel" class="tab-pane" id="style">
             <div class="row">
                 <% if (typeof(style) !== "undefined") { %>
-                <div class="col-md-3">
-                    <label class="control-label">Textarea</label>
-                    <textarea class="form-control" rows="3" name="style"><%=style%></textarea>
-                </div>
+                    <div class="col-md-3">
+                        <label class="control-label">Textarea</label>
+                        <textarea class="form-control" rows="3" name="style"><%=style%></textarea>
+                    </div>
                 <% } %>
 
                 <% if (typeof(size) !== "undefined") { %>
-                <div class="col-md-3">
-                    <label class="control-label">Size</label>
-                    <select class="form-control" name="size" class="size">
-                        <option value="col-md-3">Small</option>
-                        <option value="col-md-6">Medium</option>
-                        <option value="col-md-12">Large</option>
-                    </select>
-                </div>
-                <script>
-                    jQuery('select.size').val('<%=size%>');
-                </script>
+                    <div class="col-md-3">
+                        <label class="control-label">Size</label>
+                        <select class="form-control size" name="size">
+                            <option value="col-md-3">Small</option>
+                            <option value="col-md-6">Medium</option>
+                            <option value="col-md-12">Large</option>
+                        </select>
+                    </div>
+                    <script>
+                        jQuery('select.size').val('<%=size%>');
+                    </script>
                 <% } %>
             </div>
         </div>
