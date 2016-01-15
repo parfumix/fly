@@ -174,8 +174,8 @@ _u = _.noConflict();
                 var tpl = _u.template(_u.unescape(template));
 
                 attributes = _u.merge(
-                    $(template).data(),
-                    attributes
+                    attributes,
+                    $(template).data()
                 );
 
                 utils.debug('Loaded Attributes ->');
@@ -412,7 +412,7 @@ _u = _.noConflict();
         if( parser.hasOwnProperty(data['type']) && ( typeof parser[data['type']] == 'function' ) ) {
             var function_name = data['type'];
 
-            self.attributes = parser[function_name](self.children)
+            self.attributes = parser[function_name](self.children);
         } else {
             self.attributes = self.children.getAttributes();
         }
