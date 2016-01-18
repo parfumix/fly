@@ -524,8 +524,14 @@ _u = _.noConflict();
                     var container = _u.get(box, selector);
                     container['elements'].push($(this))
                 } else {
+                    if( _u.has(self.options, 'finder') ) {
+                        var container = self.options['finder'](selector, this);
+                    } else {
+                        var container = $('.' + selector);
+                    }
+
                     box[selector] = {
-                        container: $('.' + selector),
+                        container: container,
                         elements: [$(this)]
                     }
                 }
